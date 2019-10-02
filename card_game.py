@@ -1,6 +1,6 @@
 from __future__ import annotations
 from enum import Enum
-from typing import Dict, List, TypeVar, Generic
+from typing import Dict, List, TypeVar, Generic, Optional
 T = TypeVar("T")
 
 # Establish Card Primitives
@@ -48,23 +48,43 @@ class StandardDeck:
 
 
 class Stack(Generic[T]):
-    def __init__(self) -> None:
-        self.stack: List[T] = []
-
-    def push(self, item: T) -> None:
-        self.stack.append(item)
+    def __init__(self, item_list: Optional[List[T]]) -> None:
+        if item_list is None:
+            self.stack: Optional[List[T]] = []
+        else:
+            self.stack: Optional[List[T]] = item_list
 
     def pop(self) -> T:
         return self.stack.pop()
 
+    def push(self, item: T) -> None:
+        self.stack.append(item)
+
+    def peak(self) -> T:
+        return self.stack[-1]
+
+
+class Pile(Stack[Card]):
+    def __init__(self) -> None:
+        super(Pile, self).__init__()
+
+    @classmethod
+    def from_list(cls, card_list: List[Card]) -> Pile:
+        return cls(card_list)
+
+    def draw(self) -> Card:
+        return self.pop()
+
+    def add(self, card: Card) -> None:
+        self.push(card)
+
+    @property
+    def size(self) -> int:
+        return len(self.stack)
+
     def __str__(self):
-        stack_str: List[str] = []
-        for item in self.stack:
-            stack_str.append(item.__str__())
-        return "".join(stack_str)
+        return self.peak().__str__().rjust(self.size-1, ']')
 
-
-Pile = Stack[Card]  # define the colloquial version of a stack for casino games
 
 if __name__ == '__main__':
     hand = [Card('2', Suit.DIAMONDS, True), Card('J', Suit.CLUBS, True), Card('4', Suit.SPADES)]
@@ -73,3 +93,7 @@ if __name__ == '__main__':
     deck = StandardDeck(visible=True)
     print('\n\nPrinting a standard deck: ')
     print(deck)
+    pile = Stack()
+    pile.stack = StandardDeck().deck
+    print('\n\nPrinting a standard pile: ')
+    print(pile)
