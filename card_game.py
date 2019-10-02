@@ -65,12 +65,8 @@ class Stack(Generic[T]):
 
 
 class Pile(Stack[Card]):
-    def __init__(self) -> None:
-        super(Pile, self).__init__()
-
-    @classmethod
-    def from_list(cls, card_list: List[Card]) -> Pile:
-        return cls(card_list)
+    def __init__(self, item_list: Optional[List[T]]) -> None:
+        super(Pile, self).__init__(item_list)
 
     def draw(self) -> Card:
         return self.pop()
@@ -83,7 +79,7 @@ class Pile(Stack[Card]):
         return len(self.stack)
 
     def __str__(self):
-        return self.peak().__str__().rjust(self.size-1, ']')
+        return self.peak().__str__().ljust(self.size-1, ']')
 
 
 if __name__ == '__main__':
@@ -93,7 +89,11 @@ if __name__ == '__main__':
     deck = StandardDeck(visible=True)
     print('\n\nPrinting a standard deck: ')
     print(deck)
-    pile = Stack()
-    pile.stack = StandardDeck().deck
+    pile = Pile(StandardDeck(visible=True).deck)
     print('\n\nPrinting a standard pile: ')
+    print(pile)
+    print('Drawing a few times...')
+    for _ in range(1, 15):
+        pile.draw()
+    print('\n\nPrinting the new pile: ')
     print(pile)
