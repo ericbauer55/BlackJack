@@ -47,6 +47,25 @@ class StandardDeck:
         return "".join(deck_str)
 
 
+class Stack(Generic[T]):
+    def __init__(self) -> None:
+        self.stack: List[T] = []
+
+    def push(self, item: T) -> None:
+        self.stack.append(item)
+
+    def pop(self) -> T:
+        return self.stack.pop()
+
+    def __str__(self):
+        stack_str: List[str] = []
+        for item in self.stack:
+            stack_str.append(item.__str__())
+        return "".join(stack_str)
+
+
+Pile = Stack[Card]  # define the colloquial version of a stack for casino games
+
 if __name__ == '__main__':
     hand = [Card('2', Suit.DIAMONDS, True), Card('J', Suit.CLUBS, True), Card('4', Suit.SPADES)]
     print('Printing a few cards: ')
