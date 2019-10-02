@@ -8,10 +8,10 @@ CARD_VALUES = [str(i) for i in range(2, 11)] + ['J', 'Q', 'K', 'A']
 
 
 class Suit(Enum):
-    HEARTS = '♥'
-    DIAMONDS = '♦'
-    CLUBS = '♣'
-    SPADES = '♠'
+    HEARTS: Suit = '♥'
+    DIAMONDS: Suit = '♦'
+    CLUBS: Suit = '♣'
+    SPADES: Suit = '♠'
 
 
 class Card:
