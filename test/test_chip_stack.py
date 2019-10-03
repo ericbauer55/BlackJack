@@ -7,7 +7,7 @@ from chip_stack import ChipStack
 
 class MyTestCase(unittest.TestCase):
     def test_empty_init(self):
-        cs = ChipStack()
+        cs = ChipStack(stack=None)
         for key in cs.stack.keys():
             self.assertEqual(cs.stack[key], 0)
 

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Dict
+from typing import Dict, Optional
 
 
 class ChipStack:
@@ -9,15 +9,15 @@ class ChipStack:
     CHIP_CHAR = '▐'
 
     # =========== Constructors ===========
-    def __init__(self) -> None:
+    def __init__(self, stack: Optional[Dict[str, int]]) -> None:
         self.stack: Dict[str, int] = {'$1': 0, '$5': 0, '$10': 0, '$20': 0, '$25': 0, '$50': 0, '$100': 0}
+        if stack is not None:
+            self._add_chips(stack)
 
     @classmethod
     def from_standard_stack(cls) -> ChipStack:
         """Initializes the chip stack for a $300 starting value"""
-        x: ChipStack = cls.__init__()
-        x.stack = {'$1': 25, '$5': 5, '$10': 3, '$20': 1, '$25': 0, '$50': 2, '$100': 1}
-        return x
+        return cls({'$1': 25, '$5': 5, '$10': 3, '$20': 1, '$25': 0, '$50': 2, '$100': 1})
 
     # =========== Helper Methods ===========
     @property
@@ -43,6 +43,13 @@ class ChipStack:
     def get_chip_value(denom: str) -> int:
         return int(denom.strip('$'))
 
+    @staticmethod
+    def get_empty_stack() -> Dict[str, int]:
+        """
+        This helper function helps the caller see the expected chip dictionary.
+        Accordingly, it can be used first to create the chip stack dictionary to later initialize a ChipStack object
+        """
+        return {'$1': 0, '$5': 0, '$10': 0, '$20': 0, '$25': 0, '$50': 0, '$100': 0}
     # =========== Chip Operations ===========
     def _add_chips(self, added_stack: Dict[str, int]) -> None:
         """
