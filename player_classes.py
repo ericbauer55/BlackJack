@@ -24,6 +24,12 @@ class ChipStack:
     def __init__(self) -> None:
         self.stack: Dict[str, int] = {'$1': 0, '$5': 0, '$10': 0, '$20': 0, '$25': 0, '$50': 0, '$100': 0}
 
+    @classmethod
+    def from_standard_stack(cls) -> ChipStack:
+        x: ChipStack = cls.__init__()
+        x.stack = {'$1': 25, '$5': 5, '$10': 3, '$20': 1, '$25': 0, '$50': 2, '$100': 1}
+        return x
+
     # =========== Visualization ===========
     @property
     def stack_value(self) -> int:
