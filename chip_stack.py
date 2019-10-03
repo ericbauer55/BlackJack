@@ -3,9 +3,12 @@ from typing import Dict
 
 
 class ChipStack:
+    # =========== Class Attributes ===========
     CHIP_COLORS: Dict[str, str] = {'$1': '', '$5': '\033[31m', '$10': '\033[34m', '$20': '\033[37m',
                                    '$25': '\033[32m', '$50': '\033[33m', '$100': '\033[30m'}
+    CHIP_CHAR = '▐'
 
+    # =========== Constructors ===========
     def __init__(self) -> None:
         self.stack: Dict[str, int] = {'$1': 0, '$5': 0, '$10': 0, '$20': 0, '$25': 0, '$50': 0, '$100': 0}
 
@@ -22,14 +25,15 @@ class ChipStack:
         """This property gets the total value of the chips in the stack"""
         chip_sum = 0
         for denomination, quantity in self.stack.items():
-            chip_sum += int(denomination.strip('$')) * quantity
+            chip_sum += ChipStack.get_chip_value(denomination) * quantity
         return chip_sum
 
     def view_stack(self, tabular: bool = False) -> None:
         if not tabular:
             print(self)
         else:
-            pass
+            for denomination, quantity in self.stack.items():
+                print('Denomination {0} has {1} chips')
 
     def __str__(self) -> str:
         pass
@@ -65,7 +69,7 @@ class ChipStack:
 
     def exchange_chips(self, denom1: str, denom2: str, quantity: int = -1) -> bool:
         """This function exchanges a quantity of denom1 for the exchange_rate*quantity of denom2 """
-        denom1_value, denom2_value = int(denom1.strip('$')), int(denom2.strip('$'))
+        denom1_value, denom2_value = ChipStack.get_chip_value(denom1), ChipStack.get_chip_value(denom2)
         if denom2_value > denom1_value:
             print('You cannot exchange "{0}" for fractional "{1}"'.format(denom1, denom2))
             return False
@@ -79,3 +83,14 @@ class ChipStack:
         self._remove_chips(remove_stack)
         return True
 
+    @staticmethod
+    def get_chip_value(denom: str) -> int:
+        return int(denom.strip('$'))
+
+if __name__ == '__main__':
+    cs = ChipStack.from_standard_stack()
+    cs.view_stack()
+    cs += cs
+    cs.view_stack()
+    cs -= cs + cs
+    cs.view_stack()
