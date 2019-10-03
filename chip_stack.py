@@ -19,7 +19,7 @@ class ChipStack:
         x.stack = {'$1': 25, '$5': 5, '$10': 3, '$20': 1, '$25': 0, '$50': 2, '$100': 1}
         return x
 
-    # =========== Visualization ===========
+    # =========== Helper Functions ===========
     @property
     def stack_value(self) -> int:
         """This property gets the total value of the chips in the stack"""
@@ -37,6 +37,10 @@ class ChipStack:
 
     def __str__(self) -> str:
         pass
+
+    @staticmethod
+    def get_chip_value(denom: str) -> int:
+        return int(denom.strip('$'))
 
     # =========== Chip Operations ===========
     def _add_chips(self, added_stack: Dict[str, int]) -> None:
@@ -83,9 +87,8 @@ class ChipStack:
         self._remove_chips(remove_stack)
         return True
 
-    @staticmethod
-    def get_chip_value(denom: str) -> int:
-        return int(denom.strip('$'))
+
+
 
 if __name__ == '__main__':
     cs = ChipStack.from_standard_stack()
