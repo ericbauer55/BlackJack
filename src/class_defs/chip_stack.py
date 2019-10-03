@@ -9,7 +9,7 @@ class ChipStack:
     CHIP_CHAR = '▐'
 
     # =========== Constructors ===========
-    def __init__(self, stack: Optional[Dict[str, int]]) -> None:
+    def __init__(self, stack: Optional[Dict[str, int]] = None) -> None:
         self.stack: Dict[str, int] = {'$1': 0, '$5': 0, '$10': 0, '$20': 0, '$25': 0, '$50': 0, '$100': 0}
         if stack is not None:
             self._add_chips(stack)
@@ -25,7 +25,7 @@ class ChipStack:
         """This property gets the total value of the chips in the stack"""
         chip_sum = 0
         for denom, quantity in self.stack.items():
-            chip_sum += ChipStack.get_chip_value(denom) * quantity
+            chip_sum += ChipStack._get_chip_value(denom) * quantity
         return chip_sum
 
     def view_stack(self, tabular: bool = False) -> None:
@@ -33,14 +33,14 @@ class ChipStack:
             print(self)
         else:
             for denom, qty in self.stack.items():
-                x = 'Denom {0} has {1} chips worth ${2}'.format(denom, qty, ChipStack.get_chip_value(denom) * qty)
+                x = 'Denom {0} has {1} chips worth ${2}'.format(denom, qty, ChipStack._get_chip_value(denom) * qty)
                 print(x)
 
     def __str__(self) -> str:
         pass
 
     @staticmethod
-    def get_chip_value(denom: str) -> int:
+    def _get_chip_value(denom: str) -> int:
         return int(denom.strip('$'))
 
     @staticmethod
@@ -50,6 +50,7 @@ class ChipStack:
         Accordingly, it can be used first to create the chip stack dictionary to later initialize a ChipStack object
         """
         return {'$1': 0, '$5': 0, '$10': 0, '$20': 0, '$25': 0, '$50': 0, '$100': 0}
+
     # =========== Chip Operations ===========
     def _add_chips(self, added_stack: Dict[str, int]) -> None:
         """
@@ -80,9 +81,12 @@ class ChipStack:
         self._remove_chips(other.stack)
 
     def exchange_chips(self, denom1: str, denom2: str, quantity: int = -1) -> bool:
-        """This function exchanges a quantity of denom1 for the exchange_rate*quantity of denom2 """
+        """
+        This function exchanges a quantity of denom1 for the exchange_rate*quantity of denom2
+        Transaction occurs within a single ChipStack object
+        """
         # TODO: if 25 $1 chips want to be exchanged for 1 $25 chip, this should be allowed
-        denom1_value, denom2_value = ChipStack.get_chip_value(denom1), ChipStack.get_chip_value(denom2)
+        denom1_value, denom2_value = ChipStack._get_chip_value(denom1), ChipStack._get_chip_value(denom2)
         if denom2_value > denom1_value:
             print('You cannot exchange "{0}" for fractional "{1}"'.format(denom1, denom2))
             return False
@@ -96,11 +100,18 @@ class ChipStack:
         self._remove_chips(remove_stack)
         return True
 
+    def transfer_chips(self, destination: ChipStack, transfer_stack: Dict[str, int]) -> None:
+        """
+        This function transfers the chip quantities specified in :param transfer_stack to the destination ChipStack
+        """
+        temp: ChipStack = ChipStack(stack=transfer_stack)
+        destination += temp
+        self -= temp
 
 
 
 if __name__ == '__main__':
-    cs = ChipStack()
+    cs = ChipStack(stack=None)
     cs.stack = {'$1': 25, '$5': 5, '$10': 3, '$20': 1, '$25': 0, '$50': 2, '$100': 1}
     cs.view_stack(tabular=True)
     print('-'*50)
