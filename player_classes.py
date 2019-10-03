@@ -39,8 +39,11 @@ class ChipStack:
             chip_sum += int(denomination.strip('$')) * quantity
         return chip_sum
 
-    def view_stack(self) -> None:
-        print(self)
+    def view_stack(self, tabular: bool = False) -> None:
+        if not tabular:
+            print(self)
+        else:
+            pass
 
     def __str__(self) -> str:
         pass
@@ -76,13 +79,19 @@ class ChipStack:
 
     def exchange_chips(self, denom1: str, denom2: str, quantity: int = -1) -> bool:
         """This function exchanges a quantity of denom1 for the exchange_rate*quantity of denom2 """
-        exchange_success: bool = True
         denom1_value, denom2_value = int(denom1.strip('$')), int(denom2.strip('$'))
         if denom2_value > denom1_value:
             print('You cannot exchange "{0}" for fractional "{1}"'.format(denom1, denom2))
             return False
-        exchange_rate: int = denom2_value // denom1_value  # floor of ratio of denom2:denom1
-
+        exchange_rate: int = denom2_value / denom1_value  # ratio of denom2:denom1
+        if quantity == -1:
+            # exchange ALL chips of denom1 for denom2
+            quantity = self.stack[denom1]  # get number of denom1 chips
+        add_stack: Dict[str, int] = {denom2: int(exchange_rate * quantity)}
+        remove_stack: Dict[str, int] = {denom1: quantity}
+        self._add_chips(add_stack)
+        self._remove_chips(remove_stack)
+        return True
 
 class Player:
     def __init__(self) -> None:
