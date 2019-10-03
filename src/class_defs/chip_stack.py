@@ -70,9 +70,9 @@ class ChipStack:
         for denomination, quantity in self.stack.items():
             # for every chip value $1 to $100, check if that is in the added_stack.
             # if so add its quantity, if not add 0
+            if self.stack[denomination] - removed_stack.get(denomination, 0) < 0:
+                raise ValueError('The quantity of {0} chips cannot go negative'.format(denomination))
             self.stack[denomination] -= removed_stack.get(denomination, 0)
-            if self.stack[denomination] < 0:
-                raise ValueError
 
     def exchange_chips(self, denom1: str, denom2: str, quantity: int = -1) -> bool:
         """
@@ -94,20 +94,27 @@ class ChipStack:
         self._remove_chips(remove_stack)
         return True
 
-    def transfer_chips(self, destination: ChipStack, transfer_stack: Dict[str, int]) -> None:
+    def transfer_chips(self, destination: ChipStack, transfer_stack: Dict[str, int]) -> bool:
         """
         This function transfers the chip quantities specified in :param transfer_stack to the destination ChipStack
         """
-        destination._add_chips(transfer_stack)
-        self._remove_chips(transfer_stack)
-
+        transfer_success: bool = True
+        # ensure that input is a copy so that state changes during removal doesn't influence add
+        transfer_stack = transfer_stack.copy()
+        try:
+            self._remove_chips(transfer_stack)
+        except ValueError:
+            raise
+        else:
+            destination._add_chips(transfer_stack)
+        return transfer_success
 
 
 if __name__ == '__main__':
     cs = ChipStack(stack=None)
     cs.stack = {'$1': 25, '$5': 5, '$10': 3, '$20': 1, '$25': 0, '$50': 2, '$100': 1}
     cs.view_stack(tabular=True)
-    print('-'*50)
+    print('-' * 50)
     cs.exchange_chips('$10', '$1')
     cs.view_stack(tabular=True)
     print('-' * 50)

@@ -53,8 +53,8 @@ class MyTestCase(unittest.TestCase):
         cs._remove_chips(std_stack)
         self.assertEqual(cs.stack, empty_stack)
         # prevent chip quantities from going negative
-        cs._remove_chips(std_stack)
-        self.assertRaises(ValueError)
+        # see https://stackoverflow.com/questions/129507/how-do-you-test-that-a-python-function-throws-an-exception
+        self.assertRaises(ValueError, cs._remove_chips, std_stack)
 
     def test_exchange_chips(self):
         pass
@@ -65,8 +65,11 @@ class MyTestCase(unittest.TestCase):
         std_stack = cs1.stack.copy()
         empty_stack = cs2.stack.copy()
         cs1.transfer_chips(cs2, cs1.stack)
+        # transfer everything from cs1 to cs2
         self.assertEqual(cs1.stack, empty_stack)
         self.assertEqual(cs2.stack, std_stack)
+        # try to transfer a standard_stack from cs1 to cs2 again
+        self.assertRaises(ValueError, cs1.transfer_chips, cs2, std_stack)
 
 if __name__ == '__main__':
     unittest.main()
