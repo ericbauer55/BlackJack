@@ -63,7 +63,8 @@ class MyTestCase(unittest.TestCase):
         self.assertRaises(ValueError, cs._remove_chips, std_stack)
 
     def test_exchange_chips(self):
-        pass
+        cs = ChipStack.from_standard_stack()
+
 
     def test_transfer_chips_all(self):
         cs1 = ChipStack.from_standard_stack()

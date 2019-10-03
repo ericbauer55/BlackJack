@@ -90,7 +90,7 @@ class ChipStack:
             raise ValueError('You cannot exchange "{0}" for fractional "{1}"'.format(denom1, denom2))
 
         add_stack: Dict[str, int] = {denom2: int(chip_num)}
-        remove_stack: Dict[str, int] = {denom1: int(chip_num) * denom2_value}
+        remove_stack: Dict[str, int] = {denom1: int(chip_num) * denom2_value // denom1_value}
         self._add_chips(add_stack)
         self._remove_chips(remove_stack)
 
