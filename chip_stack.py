@@ -19,21 +19,22 @@ class ChipStack:
         x.stack = {'$1': 25, '$5': 5, '$10': 3, '$20': 1, '$25': 0, '$50': 2, '$100': 1}
         return x
 
-    # =========== Helper Functions ===========
+    # =========== Helper Methods ===========
     @property
     def stack_value(self) -> int:
         """This property gets the total value of the chips in the stack"""
         chip_sum = 0
-        for denomination, quantity in self.stack.items():
-            chip_sum += ChipStack.get_chip_value(denomination) * quantity
+        for denom, quantity in self.stack.items():
+            chip_sum += ChipStack.get_chip_value(denom) * quantity
         return chip_sum
 
     def view_stack(self, tabular: bool = False) -> None:
         if not tabular:
             print(self)
         else:
-            for denomination, quantity in self.stack.items():
-                print('Denomination {0} has {1} chips')
+            for denom, qty in self.stack.items():
+                x = 'Denom {0} has {1} chips worth ${2}'.format(denom, qty, ChipStack.get_chip_value(denom) * qty)
+                print(x)
 
     def __str__(self) -> str:
         pass
@@ -73,6 +74,7 @@ class ChipStack:
 
     def exchange_chips(self, denom1: str, denom2: str, quantity: int = -1) -> bool:
         """This function exchanges a quantity of denom1 for the exchange_rate*quantity of denom2 """
+        # TODO: if 25 $1 chips want to be exchanged for 1 $25 chip, this should be allowed
         denom1_value, denom2_value = ChipStack.get_chip_value(denom1), ChipStack.get_chip_value(denom2)
         if denom2_value > denom1_value:
             print('You cannot exchange "{0}" for fractional "{1}"'.format(denom1, denom2))
@@ -91,9 +93,10 @@ class ChipStack:
 
 
 if __name__ == '__main__':
-    cs = ChipStack.from_standard_stack()
-    cs.view_stack()
-    cs += cs
-    cs.view_stack()
-    cs -= cs + cs
-    cs.view_stack()
+    cs = ChipStack()
+    cs.stack = {'$1': 25, '$5': 5, '$10': 3, '$20': 1, '$25': 0, '$50': 2, '$100': 1}
+    cs.view_stack(tabular=True)
+    print('-'*50)
+    cs.exchange_chips('$10', '$1')
+    cs.view_stack(tabular=True)
+    print('-' * 50)
