@@ -62,10 +62,6 @@ class ChipStack:
             # if so add its quantity, if not add 0
             self.stack[denomination] += added_stack.get(denomination, 0)
 
-    def __add__(self, other):
-        """This overloads the add function for adding two ChipStack objects to each other"""
-        self._add_chips(other.stack)
-
     def _remove_chips(self, removed_stack: Dict[str, int]) -> None:
         """
         This removes all of the quantities of valid denominations from added_stack to self.stack
@@ -75,10 +71,6 @@ class ChipStack:
             # for every chip value $1 to $100, check if that is in the added_stack.
             # if so add its quantity, if not add 0
             self.stack[denomination] -= removed_stack.get(denomination, 0)
-
-    def __sub__(self, other):
-        """This overloads the add function for subtracting two ChipStack objects to each other"""
-        self._remove_chips(other.stack)
 
     def exchange_chips(self, denom1: str, denom2: str, quantity: int = -1) -> bool:
         """
@@ -104,9 +96,8 @@ class ChipStack:
         """
         This function transfers the chip quantities specified in :param transfer_stack to the destination ChipStack
         """
-        temp: ChipStack = ChipStack(stack=transfer_stack)
-        destination += temp
-        self -= temp
+        destination._add_chips(transfer_stack)
+        self._remove_chips()
 
 
 
