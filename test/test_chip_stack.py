@@ -64,7 +64,20 @@ class MyTestCase(unittest.TestCase):
 
     def test_exchange_chips(self):
         cs = ChipStack.from_standard_stack()
-
+        # exchange all 3 $10 chips for 30 $1 chips (all chips)
+        cs.exchange_chips('$10', '$1')
+        self.assertEqual(cs.stack['$10'], 0)
+        self.assertEqual(cs.stack['$1'], 55)
+        # exchange all 3 $10 chips for 30 $1 chips (all chips)
+        cs.exchange_chips('$50', '$10', 1)
+        self.assertEqual(cs.stack['$50'], 1)
+        self.assertEqual(cs.stack['$10'], 5)
+        # try to exchange 25 $1 chips for 1 $50 and get error
+        self.assertRaises(ValueError, cs.exchange_chips, '$1', '$50', 25)
+        # exchange all 55 $1 chips for 1 $50 chips (all chips)
+        cs.exchange_chips('$1', '$50')
+        self.assertEqual(cs.stack['$50'], 2)
+        self.assertEqual(cs.stack['$1'], 5)
 
     def test_transfer_chips_all(self):
         cs1 = ChipStack.from_standard_stack()
