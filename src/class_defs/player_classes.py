@@ -1,6 +1,6 @@
 from __future__ import annotations
-from typing import Dict, List, Callable, Optional
-from chip_stack import ChipStack
+from typing import List
+from src.class_defs.chip_stack import ChipStack
 
 def get_valid_input(input_prompt: str, valid_input_list: List[str]) -> str:
     """
