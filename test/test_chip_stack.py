@@ -17,7 +17,7 @@ class MyTestCase(unittest.TestCase):
         for key in cs.stack.keys():
             self.assertEqual(cs.stack[key], std[key])
 
-    def test_stack_init_some(self):
+    def test_stack_init_sample(self):
         sample = {'$1': 0, '$5': 5, '$10': 3}
         cs = ChipStack(sample)
         for key in cs.stack.keys():
@@ -65,7 +65,7 @@ class MyTestCase(unittest.TestCase):
     def test_exchange_chips(self):
         pass
 
-    def test_transfer_chips(self):
+    def test_transfer_chips_all(self):
         cs1 = ChipStack.from_standard_stack()
         cs2 = ChipStack()
         std_stack = cs1.stack.copy()
@@ -80,6 +80,21 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(cs2.stack, std_stack)
         # try to transfer a standard_stack from cs1 to cs2 again
         self.assertRaises(ValueError, cs1.transfer_chips, cs2, std_stack)
+
+    def test_transfer_chips_sample(self):
+        sample = {'$1': 0, '$5': 5, '$10': 3}
+        cs1 = ChipStack(sample)
+        cs2 = ChipStack()
+        sample_stack = cs1.stack.copy()
+        empty_stack = cs2.stack.copy()
+        # transfer everything from cs1 to cs2
+        cs1.transfer_chips(cs2, cs1.stack)
+        self.assertEqual(cs1.stack, empty_stack)
+        self.assertEqual(cs2.stack, sample_stack)
+        # transfer everything back
+        cs2.transfer_chips(cs1, cs2.stack)
+        self.assertEqual(cs1.stack, sample_stack)
+        self.assertEqual(cs2.stack, empty_stack)
 
 
 if __name__ == '__main__':
