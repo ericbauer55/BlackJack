@@ -32,6 +32,12 @@ class ChipStack:
             chip_sum += int(denomination.strip('$')) * quantity
         return chip_sum
 
+    def view_stack(self) -> None:
+        print(self)
+
+    def __str__(self) -> str:
+        pass
+
     # =========== Chip Operations ===========
     def _add_chips(self, added_stack: Dict[str, int]) -> None:
         """
