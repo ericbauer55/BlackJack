@@ -32,7 +32,7 @@ class MyTestCase(unittest.TestCase):
         # create an empty stack and add another empty stack
         cs = ChipStack()
         empty_stack = {'$1': 0, '$5': 0, '$10': 0, '$20': 0, '$25': 0, '$50': 0, '$100': 0}
-        stack = cs.stack
+        stack = cs.stack.copy()
         cs._add_chips(empty_stack)
         self.assertEqual(cs.stack, stack)
         self.assertEqual(cs.stack, empty_stack)
@@ -45,7 +45,7 @@ class MyTestCase(unittest.TestCase):
         # create a std stack and remove another empty stack
         cs = ChipStack.from_standard_stack()
         empty_stack = {'$1': 0, '$5': 0, '$10': 0, '$20': 0, '$25': 0, '$50': 0, '$100': 0}
-        std_stack = cs.stack
+        std_stack = cs.stack.copy()
         cs._remove_chips(empty_stack)
         self.assertEqual(cs.stack, std_stack)
         self.assertNotEqual(cs.stack, empty_stack)
@@ -62,10 +62,10 @@ class MyTestCase(unittest.TestCase):
     def test_transfer_chips(self):
         cs1 = ChipStack.from_standard_stack()
         cs2 = ChipStack()
-        std_stack = cs1.stack
-        empty_stack = cs2.stack
+        std_stack = cs1.stack.copy()
+        empty_stack = cs2.stack.copy()
         cs1.transfer_chips(cs2, cs1.stack)
-        #self.assertEqual(cs1.stack, empty_stack)
+        self.assertEqual(cs1.stack, empty_stack)
         self.assertEqual(cs2.stack, std_stack)
 
 if __name__ == '__main__':
