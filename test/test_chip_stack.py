@@ -17,6 +17,12 @@ class MyTestCase(unittest.TestCase):
         for key in cs.stack.keys():
             self.assertEqual(cs.stack[key], std[key])
 
+    def test_stack_init_some(self):
+        sample = {'$1': 0, '$5': 5, '$10': 3}
+        cs = ChipStack(sample)
+        for key in cs.stack.keys():
+            self.assertEqual(cs.stack[key], sample.get(key, 0))
+
     def test_get_stack_value(self):
         cs = ChipStack.from_standard_stack()
         self.assertEqual(300, cs.stack_value)
@@ -64,12 +70,17 @@ class MyTestCase(unittest.TestCase):
         cs2 = ChipStack()
         std_stack = cs1.stack.copy()
         empty_stack = cs2.stack.copy()
-        cs1.transfer_chips(cs2, cs1.stack)
         # transfer everything from cs1 to cs2
+        cs1.transfer_chips(cs2, cs1.stack)
+        self.assertEqual(cs1.stack, empty_stack)
+        self.assertEqual(cs2.stack, std_stack)
+        # transfer emptied stack to cs2 again
+        cs1.transfer_chips(cs2, cs1.stack)
         self.assertEqual(cs1.stack, empty_stack)
         self.assertEqual(cs2.stack, std_stack)
         # try to transfer a standard_stack from cs1 to cs2 again
         self.assertRaises(ValueError, cs1.transfer_chips, cs2, std_stack)
+
 
 if __name__ == '__main__':
     unittest.main()
