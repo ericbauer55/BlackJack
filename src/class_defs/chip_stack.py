@@ -71,6 +71,8 @@ class ChipStack:
             # for every chip value $1 to $100, check if that is in the added_stack.
             # if so add its quantity, if not add 0
             self.stack[denomination] -= removed_stack.get(denomination, 0)
+            if self.stack[denomination] < 0:
+                raise ValueError
 
     def exchange_chips(self, denom1: str, denom2: str, quantity: int = -1) -> bool:
         """
@@ -97,7 +99,7 @@ class ChipStack:
         This function transfers the chip quantities specified in :param transfer_stack to the destination ChipStack
         """
         destination._add_chips(transfer_stack)
-        self._remove_chips()
+        self._remove_chips(transfer_stack)
 
 
 
