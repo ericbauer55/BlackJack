@@ -1,8 +1,6 @@
 from __future__ import annotations
 from typing import Dict, List, Callable, Optional
 
-CHIP_COLORS: Dict[str, str] = {'$1': '', '$5': '\033[31m', '$10': '\033[34m', '$20': '\033[37m',
-                               '$25': '\033[32m', '$50': '\033[33m', '$100': '\033[30m'}
 
 def get_valid_input(input_prompt: str, valid_input_list: List[str]) -> str:
     """
@@ -20,6 +18,9 @@ def get_valid_input(input_prompt: str, valid_input_list: List[str]) -> str:
 
 
 class ChipStack:
+    CHIP_COLORS: Dict[str, str] = {'$1': '', '$5': '\033[31m', '$10': '\033[34m', '$20': '\033[37m',
+                                   '$25': '\033[32m', '$50': '\033[33m', '$100': '\033[30m'}
+
     def __init__(self) -> None:
         self.stack: Dict[str, int] = {'$1': 0, '$5': 0, '$10': 0, '$20': 0, '$25': 0, '$50': 0, '$100': 0}
 
