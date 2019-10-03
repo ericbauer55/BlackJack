@@ -11,6 +11,7 @@ class ChipStack:
 
     @classmethod
     def from_standard_stack(cls) -> ChipStack:
+        """Initializes the chip stack for a $300 starting value"""
         x: ChipStack = cls.__init__()
         x.stack = {'$1': 25, '$5': 5, '$10': 3, '$20': 1, '$25': 0, '$50': 2, '$100': 1}
         return x
@@ -77,3 +78,4 @@ class ChipStack:
         self._add_chips(add_stack)
         self._remove_chips(remove_stack)
         return True
+
