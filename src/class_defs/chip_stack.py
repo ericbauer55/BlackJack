@@ -74,25 +74,25 @@ class ChipStack:
                 raise ValueError('The quantity of {0} chips cannot go negative'.format(denomination))
             self.stack[denomination] -= removed_stack.get(denomination, 0)
 
-    def exchange_chips(self, denom1: str, denom2: str, quantity: int = -1) -> bool:
+    def exchange_chips(self, denom1: str, denom2: str, quantity: int = -1) -> None:
         """
-        This function exchanges a quantity of denom1 for the exchange_rate*quantity of denom2
+        This function exchanges a quantity of denom1 for denom2
         Transaction occurs within a single ChipStack object
         """
-        # TODO: if 25 $1 chips want to be exchanged for 1 $25 chip, this should be allowed
         denom1_value, denom2_value = ChipStack._get_chip_value(denom1), ChipStack._get_chip_value(denom2)
-        if denom2_value > denom1_value:
-            print('You cannot exchange "{0}" for fractional "{1}"'.format(denom1, denom2))
-            return False
-        exchange_rate: int = denom2_value / denom1_value  # ratio of denom2:denom1
+
         if quantity == -1:
             # exchange ALL chips of denom1 for denom2
             quantity = self.stack[denom1]  # get number of denom1 chips
-        add_stack: Dict[str, int] = {denom2: int(exchange_rate * quantity)}
-        remove_stack: Dict[str, int] = {denom1: quantity}
+        # quantity * denom1 = chip_num * denom2
+        chip_num = (denom1_value / denom2_value) * quantity
+        if chip_num < 1.0:
+            raise ValueError('You cannot exchange "{0}" for fractional "{1}"'.format(denom1, denom2))
+
+        add_stack: Dict[str, int] = {denom2: int(chip_num)}
+        remove_stack: Dict[str, int] = {denom1: int(chip_num) * denom2_value}
         self._add_chips(add_stack)
         self._remove_chips(remove_stack)
-        return True
 
     def transfer_chips(self, destination: ChipStack, transfer_stack: Dict[str, int]) -> bool:
         """
@@ -111,8 +111,7 @@ class ChipStack:
 
 
 if __name__ == '__main__':
-    cs = ChipStack(stack=None)
-    cs.stack = {'$1': 25, '$5': 5, '$10': 3, '$20': 1, '$25': 0, '$50': 2, '$100': 1}
+    cs = ChipStack.from_standard_stack()
     cs.view_stack(tabular=True)
     print('-' * 50)
     cs.exchange_chips('$10', '$1')
