@@ -51,8 +51,8 @@ class CardHand:
     def transfer_cards(self, card_names: List[str], other_hand: CardHand) -> None:
         pass
 
-    def __str__(self) -> str:
-        return ''.join([card.name for card in self.hand])
+    def to_string(self, all_visible: bool = False) -> str:
+        return ''.join([card.to_string(visible=(all_visible or card.visible)) for card in self.hand])
 
 
 class StandardDeck:
