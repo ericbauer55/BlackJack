@@ -43,8 +43,10 @@ class Card:
 
 class CardHand:
     # =========== Constructors ===========
-    def __init__(self):
-        self.hand: List[Card] = []
+    def __init__(self, card_list: Optional[List[Card]] = None):
+        if card_list is None:
+            card_list = []
+        self.hand: List[Card] = card_list
 
     # =========== Helper Methods ===========
     def _get_card_index(self, card_name: str) -> int:
