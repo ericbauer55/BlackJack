@@ -30,11 +30,17 @@ class Player:
         if hand is None:
             hand = CardHand()
         self.chips: ChipStack = chips  # empty stack unless otherwise specified
-        self.hand: CardHand = hand
+        self._player_hand: CardHand = hand
         if action_set is None:
             action_set = {'actions_basic':  # load only a basic set of instance methods for actions
-                              {'view-my-hand': self.view_hand}}
+                              {'view-hand': self.view_hand, 'draw': self.draw, 'discard': self.discard}
+                          }
         self.action_set: ActionSet = action_set
+
+    # =========== Helper Methods ===========
+    @property
+    def hand(self) -> List[Card]:
+        return self._player_hand.hand
 
     # =========== Player Actions ===========
     def view_hand(self, player: Optional[Player] = None, all_visible: bool = False) -> None:
@@ -43,17 +49,20 @@ class Player:
         if player is None:
             player = self
         print('{0} viewing {1}\'s Hand:'.format(self.name, player.name))
-        print(player.hand.to_string(all_visible=all_visible))
+        print(player._player_hand.to_string(all_visible=all_visible))
 
     def draw(self, card_pile: CardPile, n_cards: int = 1, all_visible: bool = False) -> None:
         for _ in range(1, n_cards + 1):
             drawn = card_pile.draw()
             drawn.visible = all_visible
-            self.hand.add_card(drawn)
+            self._player_hand.add_card(drawn)
 
     def discard(self, discard_pile: CardPile, card_names: List[str]) -> None:
         for name in card_names:
-            discard_pile.add(self.hand.remove_card(name))
+            discard_pile.add(self._player_hand.remove_card(name))
+
+    def transfer(self, other_player: Player, card_names: List[str]) -> None:
+        self._player_hand.transfer_cards(other_hand=other_player._player_hand, card_names=card_names)
 
 
 if __name__ == '__main__':
@@ -74,3 +83,9 @@ if __name__ == '__main__':
     py1.view_hand(all_visible=True)
     py2.view_hand(all_visible=True)
     print('\nDeck:', deck)
+
+    # transfer some cards from player 1 to player 2's hand
+    py1.transfer(py2, card_names=[card.name for card in py1.hand])
+    print('\nPlayer Hands After Transferring: ')
+    py1.view_hand(all_visible=True)
+    py2.view_hand(all_visible=True)
