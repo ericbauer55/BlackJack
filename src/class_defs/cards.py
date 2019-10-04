@@ -43,7 +43,7 @@ class CardHand:
         self.hand: List[Card] = []
 
     def add_card(self, card: Card) -> None:
-        pass
+        self.hand.append(card)
 
     def remove_card(self, card_name: str) -> Card:
         pass
