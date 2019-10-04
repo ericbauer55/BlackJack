@@ -52,6 +52,10 @@ class CardHand:
         pass
 
     def to_string(self, all_visible: bool = False) -> str:
+        """
+        This returns a joined string of the cards, printed with their respective visibility status
+        unless all_visible = True, in which case all of the cards will show their face-up value
+        """
         return ''.join([card.to_string(visible=(all_visible or card.visible)) for card in self.hand])
 
 
