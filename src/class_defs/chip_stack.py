@@ -9,7 +9,8 @@ class ChipStack:
     CHIP_CHAR = '▐'
 
     # =========== Constructors ===========
-    def __init__(self, stack: Optional[Dict[str, int]] = None) -> None:
+    def __init__(self, stack: Optional[Dict[str, int]] = None, name: str = '') -> None:
+        self.name = name  # name of the stack
         self.stack: Dict[str, int] = {'$1': 0, '$5': 0, '$10': 0, '$20': 0, '$25': 0, '$50': 0, '$100': 0}
         if stack is not None:
             self._add_chips(stack)
@@ -50,9 +51,12 @@ class ChipStack:
             rows.append(h_line) # insert a filler horizontal line between each data row
             rows.append(['|', denom.center(col_widths[0]-1), '|', '{}'.format(qty).center(col_widths[1]-1), '|',
                          '${}'.format(qty * ChipStack._get_chip_value(denom)).center(col_widths[2]-1), '|'])
-        # finish wrapping the table in good formatting
+        # finish wrapping the table in good formatting & give it a label
         rows[1] = hb_line
         rows.append(hb_line)
+        rows.insert(0, hb_line)
+        title = 'ChipStack{0}'.format(' ' + self.name if self.name != '' else self.name)
+        rows.insert(0, ['|\033[01m', title.center(len(h_line)-2), '\033[00m|'])
         rows.insert(0, hb_line)
         # join all of the row elements together and return it
         return '\n'.join(["".join(row) for row in rows])
