@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import List, Dict, Optional, Callable
 from src.class_defs.chip_stack import ChipStack
-from src.class_defs.cards import Card
+from src.class_defs.cards import Card, StandardDeck, Pile
 
 Hand = List[Card]
 ActionSet = Dict[str, Dict[str, Callable]]
@@ -37,6 +37,7 @@ class Player:
 
     # =========== Player Actions ===========
     def view_hand(self, player: Optional[Player] = None) -> None:
+        # TODO: Players manage the visibility per Card of a Hand of Cards, it shouldn't be a state of Card
         # if no player is passed to this method, assume 'self' is the player
         # hence 'self' can see all of its cards. This is not necessarily true for 'self' viewing other players' cards
         all_visible = False
@@ -44,8 +45,5 @@ class Player:
             player = self
             all_visible = True
         print('{0}\'s Hand:')
-        for card in player.hand:
-            # TODO: Players manage the visibility per Card of a Hand of Cards, it shouldn't be a state of Card
-            #if card.visible or all_visible:
-            print(card)
+        print(''.join([card.to_string(visible=all_visible) for card in self.hand]))
 

@@ -34,6 +34,22 @@ class Card:
             return '\033[47m\033[30m' + card_str + '\033[0m'
 
 
+class CardHand:
+    def __init__(self):
+        self.hand: List[Dict[str, object]] = []
+
+    def add_card(self, card: Card) -> None:
+        pass
+
+    def remove_card(self, card_name: str) -> Dict[str, object]:
+        pass
+
+    def transfer_card(self, other_hand: CardHand) -> None:
+        pass
+
+    def __str__(self) -> str:
+        pass
+
 
 class StandardDeck:
     def __init__(self, visible: bool = False) -> None:
@@ -68,9 +84,9 @@ class Stack(Generic[T]):
         return self.stack[-1]
 
 
-class Pile(Stack[Card]):
+class CardPile(Stack[Card]):
     def __init__(self, item_list: Optional[List[T]]) -> None:
-        super(Pile, self).__init__(item_list)
+        super(CardPile, self).__init__(item_list)
 
     def draw(self) -> Card:
         return self.pop()
