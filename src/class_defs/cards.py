@@ -1,6 +1,7 @@
 from __future__ import annotations
 from enum import Enum
 from typing import Dict, List, TypeVar, Generic, Optional
+import random
 T = TypeVar("T")
 
 # Establish Card Primitives
@@ -130,12 +131,15 @@ class CardPile(Stack[Card]):
     def __str__(self):
         return self.peak().__str__().ljust(self.size - 1, ']')
 
-    # =========== Hand Operations ===========
+    # =========== Pile Operations ===========
     def draw(self) -> Card:
         return self.pop()
 
     def add(self, card: Card) -> None:
         self.push(card)
+
+    def shuffle(self) -> None:
+        random.shuffle(self.stack)  # self.stack is a list of cards
 
 
 if __name__ == '__main__':
