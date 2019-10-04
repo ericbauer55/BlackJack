@@ -39,17 +39,17 @@ class Card:
 
 
 class CardHand:
+    # =========== Constructors ===========
     def __init__(self):
         self.hand: List[Card] = []
 
-    def add_card(self, card: Card) -> None:
-        self.hand.append(card)
-
-    def remove_card(self, card_name: str) -> Card:
-        pass
-
-    def transfer_cards(self, card_names: List[str], other_hand: CardHand) -> None:
-        pass
+    # =========== Helper Methods ===========
+    def _get_card_index(self, card_name: str) -> int:
+        for i, card in enumerate(self.hand):
+            if card.name == card_name:
+                return i
+        # if card_name not found, raise value error
+        raise ValueError('No card with name "{}" was found in the hand'.format(card_name))
 
     def to_string(self, all_visible: bool = False) -> str:
         """
@@ -57,6 +57,20 @@ class CardHand:
         unless all_visible = True, in which case all of the cards will show their face-up value
         """
         return ''.join([card.to_string(visible=(all_visible or card.visible)) for card in self.hand])
+
+    # =========== Hand Operations ===========
+    def add_card(self, card: Card) -> None:
+        self.hand.append(card)
+
+    def remove_card(self, card_name: str) -> Card:
+        index = self._get_card_index(card_name)
+        return self.hand.pop(index)
+
+    def transfer_cards(self, card_names: List[str], other_hand: CardHand) -> None:
+        for name in card_names:
+            other_hand.add_card(self.remove_card(name))
+
+
 
 
 class StandardDeck:
