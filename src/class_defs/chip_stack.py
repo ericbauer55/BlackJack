@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Dict, Optional
+from typing import Dict, Optional, List
 
 
 class ChipStack:
@@ -30,14 +30,32 @@ class ChipStack:
 
     def view_stack(self, tabular: bool = False) -> None:
         if not tabular:
-            print(self)
-        else:
+            output: List[str] = []
             for denom, qty in self.stack.items():
-                x = 'Denom {0} has {1} chips worth ${2}'.format(denom, qty, ChipStack._get_chip_value(denom) * qty)
-                print(x)
+                temp = '{0} :{1}'.format(denom.rjust(4), ChipStack.CHIP_COLORS[denom]) + \
+                       ChipStack.CHIP_CHAR * qty + '\033[00m' + ' ({} chips)'.format(qty)
+                output.append(temp)
+            print('\n'.join(output))
+        else:
+            print(self)
 
     def __str__(self) -> str:
-        pass
+        # Create a column header row first in order to format the others with real column widths
+        rows: List[List[str]] = [['| Denom ', '| Quantity ', '| Subtotal ', '|']]
+        col_widths: List[int] = [len(col) for col in rows[0]]
+        h_line = ['+', '-' * (col_widths[0] - 1), '+', '-' * (col_widths[1] - 1), '+', '-' * (col_widths[2] - 1), '+']
+        hb_line = ['+', '=' * (col_widths[0] - 1), '+', '=' * (col_widths[1] - 1), '+', '=' * (col_widths[2] - 1), '+']
+        # Create the real data rows
+        for denom, qty in self.stack.items():
+            rows.append(h_line) # insert a filler horizontal line between each data row
+            rows.append(['|', denom.center(col_widths[0]-1), '|', '{}'.format(qty).center(col_widths[1]-1), '|',
+                         '${}'.format(qty * ChipStack._get_chip_value(denom)).center(col_widths[2]-1), '|'])
+        # finish wrapping the table in good formatting
+        rows[1] = hb_line
+        rows.append(hb_line)
+        rows.insert(0, hb_line)
+        # join all of the row elements together and return it
+        return '\n'.join(["".join(row) for row in rows])
 
     @staticmethod
     def _get_chip_value(denom: str) -> int:
@@ -115,5 +133,5 @@ if __name__ == '__main__':
     cs.view_stack(tabular=True)
     print('-' * 50)
     cs.exchange_chips('$10', '$1')
-    cs.view_stack(tabular=True)
+    cs.view_stack(tabular=False)
     print('-' * 50)
