@@ -145,6 +145,8 @@ class CardPile(Stack[Card]):
 
 
 if __name__ == '__main__':
+    main_hand = CardHand()
+    print(main_hand.to_string())
     hand = CardHand([Card('2', Suit.DIAMONDS, True), Card('J', Suit.CLUBS, True), Card('4', Suit.SPADES)])
     print('Printing a hand of cards: ')
     print(hand.to_string())
