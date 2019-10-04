@@ -39,5 +39,5 @@ class Player:
         if player is None:
             player = self
         print('{0}\'s Hand:')
-        print(player.to_string(all_visible=all_visible))
+        print(player.hand.to_string(all_visible=all_visible))
 

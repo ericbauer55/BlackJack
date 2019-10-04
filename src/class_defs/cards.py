@@ -56,6 +56,8 @@ class CardHand:
         This returns a joined string of the cards, printed with their respective visibility status
         unless all_visible = True, in which case all of the cards will show their face-up value
         """
+        if len(self.hand) == 0:
+            return '<empty hand>'
         return ''.join([card.to_string(visible=(all_visible or card.visible)) for card in self.hand])
 
     # =========== Hand Operations ===========
@@ -69,8 +71,6 @@ class CardHand:
     def transfer_cards(self, card_names: List[str], other_hand: CardHand) -> None:
         for name in card_names:
             other_hand.add_card(self.remove_card(name))
-
-
 
 
 class StandardDeck:
