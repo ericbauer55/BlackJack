@@ -137,8 +137,11 @@ class CardPile(Stack[Card]):
     def draw(self) -> Card:
         return self.pop()
 
-    def add(self, card: Card) -> None:
-        self.push(card)
+    def add(self, card: Card, to_bottom: bool = False) -> None:
+        if to_bottom:
+            self.stack.insert(0, card)
+        else:
+            self.push(card)
 
     def shuffle(self) -> None:
         random.shuffle(self.stack)  # self.stack is a list of cards
