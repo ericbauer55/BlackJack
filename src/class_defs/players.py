@@ -5,6 +5,7 @@ from src.class_defs.cards import Card, CardPile, CardHand
 
 ActionSet = Dict[str, Dict[str, Callable]]
 
+
 def get_valid_input(input_prompt: str, valid_input_list: List[str]) -> str:
     """
     This generically prompts the user to input a string that is in the discrete valid list
@@ -33,7 +34,8 @@ class Player:
         self._player_hand: CardHand = hand
         if action_set is None:
             action_set = {'actions_basic':  # load only a basic set of instance methods for actions
-                              {'view-hand': self.view_hand, 'draw': self.draw, 'discard': self.discard}
+                              {'view-hand': self.view_hand, 'draw': self.draw,
+                               'discard': self.discard, 'transfer': self.transfer}
                           }
         self.action_set: ActionSet = action_set
 
@@ -41,6 +43,9 @@ class Player:
     @property
     def hand(self) -> List[Card]:
         return self._player_hand.hand
+
+    def dispatch_action(self, action_method: Callable):
+        pass
 
     # =========== Player Actions ===========
     def view_hand(self, player: Optional[Player] = None, all_visible: bool = False) -> None:
