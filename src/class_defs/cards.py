@@ -20,15 +20,19 @@ class Card:
         self.suit: Suit = suit
         self.visible: bool = visible
 
-    def __str__(self) -> str:
-        if self.visible:
-            card_str: str = '[' + self.value + self.suit.value + ']'
-            if self.suit == Suit.HEARTS or self.suit == Suit.DIAMONDS:
-                return '\033[31m' + card_str + '\033[0m'
-            else:
-                return '\033[47m\033[30m' + card_str + '\033[0m'
+    def to_string(self, visible: bool = False) -> str:
+        if visible:
+            return self.__str__()
         else:
             return '[??]'
+
+    def __str__(self) -> str:
+        card_str: str = '[' + self.value + self.suit.value + ']'
+        if self.suit == Suit.HEARTS or self.suit == Suit.DIAMONDS:
+            return '\033[31m' + card_str + '\033[0m'
+        else:
+            return '\033[47m\033[30m' + card_str + '\033[0m'
+
 
 
 class StandardDeck:

@@ -22,12 +22,30 @@ def get_valid_input(input_prompt: str, valid_input_list: List[str]) -> str:
 
 
 class Player:
-    def __init__(self, name: str='', chips: ChipStack=ChipStack(), hand: Hand=[],
-                 action_set: Optional[ActionSet]=None) -> None:
+    # =========== Constructors ===========
+    def __init__(self, name: str = '', chips: ChipStack = ChipStack(), hand: Optional[Hand] = None,
+                 action_set: Optional[ActionSet] = None) -> None:
         self.name: str = name
-        self.chips: ChipStack = chips  # empty stack
-        self.hand: Hand = hand  # empty hand until cards drawn from a deck
+        self.chips: ChipStack = chips  # empty stack unless otherwise specified
+        if hand is None:
+            hand = []  # empty hand until cards drawn from a deck
+        self.hand: Hand = hand
+        if action_set is None:
+            action_set = {'actions_basic':  # load only a basic set of instance methods for actions
+                              {'view-my-hand': self.view_hand}}
         self.action_set: ActionSet = action_set
 
-
+    # =========== Player Actions ===========
+    def view_hand(self, player: Optional[Player] = None) -> None:
+        # if no player is passed to this method, assume 'self' is the player
+        # hence 'self' can see all of its cards. This is not necessarily true for 'self' viewing other players' cards
+        all_visible = False
+        if player is None:
+            player = self
+            all_visible = True
+        print('{0}\'s Hand:')
+        for card in player.hand:
+            # TODO: Players manage the visibility per Card of a Hand of Cards, it shouldn't be a state of Card
+            #if card.visible or all_visible:
+            print(card)
 
