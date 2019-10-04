@@ -20,6 +20,10 @@ class Card:
         self.suit: Suit = suit
         self.visible: bool = visible
 
+    @property
+    def name(self) -> str:
+        return self.to_string(visible=True)
+
     def to_string(self, visible: bool = False) -> str:
         if visible:
             return self.__str__()
@@ -36,19 +40,19 @@ class Card:
 
 class CardHand:
     def __init__(self):
-        self.hand: List[Dict[str, object]] = []
+        self.hand: List[Card] = []
 
     def add_card(self, card: Card) -> None:
         pass
 
-    def remove_card(self, card_name: str) -> Dict[str, object]:
+    def remove_card(self, card_name: str) -> Card:
         pass
 
-    def transfer_card(self, other_hand: CardHand) -> None:
+    def transfer_cards(self, card_names: List[str], other_hand: CardHand) -> None:
         pass
 
     def __str__(self) -> str:
-        pass
+        return ''.join([card.name for card in self.hand])
 
 
 class StandardDeck:
