@@ -1,6 +1,10 @@
 from __future__ import annotations
-from typing import List
+from typing import List, Dict, Optional, Callable
 from src.class_defs.chip_stack import ChipStack
+from src.class_defs.cards import Card
+
+Hand = List[Card]
+ActionSet = Dict[str, Dict[str, Callable]]
 
 def get_valid_input(input_prompt: str, valid_input_list: List[str]) -> str:
     """
@@ -18,6 +22,12 @@ def get_valid_input(input_prompt: str, valid_input_list: List[str]) -> str:
 
 
 class Player:
-    def __init__(self) -> None:
-        self.chips: ChipStack = ChipStack()
+    def __init__(self, name: str='', chips: ChipStack=ChipStack(), hand: Hand=[],
+                 action_set: Optional[ActionSet]=None) -> None:
+        self.name: str = name
+        self.chips: ChipStack = chips  # empty stack
+        self.hand: Hand = hand  # empty hand until cards drawn from a deck
+        self.action_set: ActionSet = action_set
+
+
 
