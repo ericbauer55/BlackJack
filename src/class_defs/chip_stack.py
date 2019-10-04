@@ -55,9 +55,9 @@ class ChipStack:
         rows[1] = hb_line
         rows.append(hb_line)
         rows.insert(0, hb_line)
-        title = 'ChipStack{0}'.format(' ' + self.name if self.name != '' else self.name)
-        rows.insert(0, ['|\033[01m', title.center(len(h_line)-2), '\033[00m|'])
-        rows.insert(0, hb_line)
+        #title = 'ChipStack{0}'.format(' ' + self.name if self.name != '' else self.name)
+        #rows.insert(0, ['|\033[01m', title.center(len(h_line)-2), '\033[00m|'])
+        #rows.insert(0, hb_line)
         # join all of the row elements together and return it
         return '\n'.join(["".join(row) for row in rows])
 
