@@ -15,11 +15,13 @@ class Suit(Enum):
 
 
 class Card:
+    # =========== Constructors ===========
     def __init__(self, value: str, suit: Suit, visible: bool = False) -> None:
         self.value: str = value
         self.suit: Suit = suit
         self.visible: bool = visible
 
+    # =========== Helper Methods ===========
     @property
     def name(self) -> str:
         return self.to_string(visible=True)
@@ -74,12 +76,14 @@ class CardHand:
 
 
 class StandardDeck:
+    # =========== Constructors ===========
     def __init__(self, visible: bool = False) -> None:
         self.deck: List[Card] = []
         for s in Suit:
             for v in CARD_VALUES:
                 self.deck.append(Card(v, s, visible=visible))
 
+    # =========== Helper Methods ===========
     def __str__(self) -> str:
         deck_str: List[str] = []
         for i in range(0, len(self.deck)):
@@ -90,12 +94,14 @@ class StandardDeck:
 
 
 class Stack(Generic[T]):
+    # =========== Constructors ===========
     def __init__(self, item_list: Optional[List[T]]) -> None:
         if item_list is None:
             self.stack: Optional[List[T]] = []
         else:
             self.stack: Optional[List[T]] = item_list
 
+    # =========== Stack Operations ===========
     def pop(self) -> T:
         return self.stack.pop()
 
@@ -107,21 +113,29 @@ class Stack(Generic[T]):
 
 
 class CardPile(Stack[Card]):
+    # =========== Constructors ===========
     def __init__(self, item_list: Optional[List[T]]) -> None:
         super(CardPile, self).__init__(item_list)
 
-    def draw(self) -> Card:
-        return self.pop()
+    @classmethod
+    def from_standard_deck(cls) -> CardPile:
+        std = StandardDeck()
+        return cls(std.deck)
 
-    def add(self, card: Card) -> None:
-        self.push(card)
-
+    # =========== Helper Methods ===========
     @property
     def size(self) -> int:
         return len(self.stack)
 
     def __str__(self):
-        return self.peak().__str__().ljust(self.size-1, ']')
+        return self.peak().__str__().ljust(self.size - 1, ']')
+
+    # =========== Hand Operations ===========
+    def draw(self) -> Card:
+        return self.pop()
+
+    def add(self, card: Card) -> None:
+        self.push(card)
 
 
 if __name__ == '__main__':
@@ -131,7 +145,7 @@ if __name__ == '__main__':
     deck = StandardDeck(visible=True)
     print('\n\nPrinting a standard deck: ')
     print(deck)
-    pile = Pile(StandardDeck(visible=True).deck)
+    pile = CardPile.from_standard_deck()
     print('\n\nPrinting a standard pile: ')
     print(pile)
     print('Drawing a few times...')
