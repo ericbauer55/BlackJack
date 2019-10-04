@@ -145,17 +145,19 @@ class CardPile(Stack[Card]):
 
 
 if __name__ == '__main__':
-    hand = [Card('2', Suit.DIAMONDS, True), Card('J', Suit.CLUBS, True), Card('4', Suit.SPADES)]
-    print('Printing a few cards: ')
-    [print(c) for c in hand]
+    hand = CardHand([Card('2', Suit.DIAMONDS, True), Card('J', Suit.CLUBS, True), Card('4', Suit.SPADES)])
+    print('Printing a hand of cards: ')
+    print(hand.to_string())
     deck = StandardDeck(visible=True)
     print('\n\nPrinting a standard deck: ')
     print(deck)
     pile = CardPile.from_standard_deck()
     print('\n\nPrinting a standard pile: ')
     print(pile)
-    print('Drawing a few times...')
+    print('Drawing a few times into hand...')
     for _ in range(1, 15):
-        pile.draw()
+        hand.add_card(pile.draw())
     print('\n\nPrinting the new pile: ')
     print(pile)
+    print('Printing a hand of cards: ')
+    print(hand.to_string(all_visible=True))
