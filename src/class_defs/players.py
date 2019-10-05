@@ -47,7 +47,7 @@ class Player:
     def dispatch_action(self, action_method: Callable):
         pass
 
-    # =========== Player Actions ===========
+    # =========== Player Card Actions ===========
     def view_hand(self, player: Optional[Player] = None, all_visible: bool = False) -> None:
         # TODO: Players manage the visibility per Card of a Hand of Cards, it shouldn't be a state of Card
         # if no player is passed to this method, assume 'self' is the player
@@ -68,6 +68,14 @@ class Player:
 
     def transfer(self, other_player: Player, card_names: List[str]) -> None:
         self._player_hand.transfer_cards(other_hand=other_player._player_hand, card_names=card_names)
+
+    # =========== Player Chip Actions ===========
+    def view_chips(self, player: Optional[Player] = None, all_visible: bool = False) -> None:
+        # if no player is passed to this method, assume 'self' is the player
+        if player is None:
+            player = self
+        print('{0} viewing {1}\'s Chip Stack:'.format(self.name, player.name))
+        player.chips.view_stack(tabular=False)
 
 
 if __name__ == '__main__':
