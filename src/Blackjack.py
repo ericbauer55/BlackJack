@@ -8,8 +8,15 @@ from typing import Dict, List, Optional
 class BlackJack:
     # =========== Constructors ===========
     def __init__(self):
-        self.dealer = Player(name='dealer', chips=ChipStack.from_dealer_stack())
+        # Setup the Players
+        self.dealer: Player = Player(name='dealer', chips=ChipStack.from_dealer_stack())
         self.dealer.chips.view_stack()
+        self.players: Dict[str, Dict[str, object]] = {'Human':
+                                                          {'player': Player('human', ChipStack.from_standard_stack()),
+                                                           'pot': ChipStack()}}  # pot could point to a common pot obj.
+        # Setup the Decks
+        self.draw_pile: CardPile = CardPile.from_standard_deck()
+        self.discard_pile: CardPile = CardPile()
 
     # =========== Helper Methods ===========
 
