@@ -83,15 +83,7 @@ class BlackJack:
         # second deal hands to all players that are still dealt-in
         self.deal_cards()
         # lastly check for any naturals or busts before moving to game loop
-        for player_name in self.dealt_in_players:
-            if BlackJack.is_blackjack(self.players[player_name]):
-                # Dealer pays out to the player
-                # Remove player from dealt_in list
-                pass
-            if BlackJack.is_bust(self.players[player_name]):
-                # Player pays out to dealer
-                # Remove player from dealt_in list
-                pass
+        self.check_for_payouts()
 
     def loop_hand(self) -> None:
         """This runs the game in the looping state until an exit condition (all players 'stay') is reached"""
@@ -114,6 +106,24 @@ class BlackJack:
         and the discard pile will be shuffled in.
         """
         pass
+
+    def check_for_payouts(self) -> None:
+        for player_name in self.dealt_in_players:
+            if BlackJack.is_blackjack(self.players[player_name]):
+                # Dealer pays out to the player
+                payout_rate: float = BlackJack.get_payout_rate(self.players[player_name])  # see if 1:1 or 3:2
+                # assume rounding down is house cut
+                payout_value: int = int(payout_rate * self.players[player_name].chips.stack_value)
+                payout_chips: Dict[str, int] = ChipStack.get_chips_from_amount(payout_value)
+                self.dealer.payout_chips(self.players[player_name].pot, payout_chips)
+                # Remove player from dealt_in list
+                self.dealt_in_players.remove(player_name)
+                pass
+            if BlackJack.is_bust(self.players[player_name]):
+                # Player pays out to dealer
+                self.players[player_name].payout_all(self.dealer.pot)
+                # Remove player from dealt_in list
+                self.dealt_in_players.remove(player_name)
 
     # =========== Control Flow Actions ===========
     # These are the functions that solicit user input and control the order of game operations

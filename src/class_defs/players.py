@@ -82,6 +82,15 @@ class Player:
         print('{0} viewing {1}\'s Chip Stack:'.format(self.name, player.name))
         player.chips.view_stack(tabular=False)
 
+    def payout_chips(self, destination_pot: ChipStack, chip_amounts: Dict[str, int]) -> None:
+        """This is a great function to use when placing bets with a player"""
+        self.pot.transfer_chips(destination_pot, chip_amounts)
+
+    def payout_all(self, destination_pot: ChipStack) -> None:
+        """This is a great function to use when moving around chip stacks after a hand"""
+        chip_amounts = self.pot.stack.copy()
+        self.pot.transfer_chips(destination_pot, chip_amounts)
+
 
 if __name__ == '__main__':
     deck = CardPile.from_standard_deck()
