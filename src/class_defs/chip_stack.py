@@ -20,6 +20,11 @@ class ChipStack:
         """Initializes the chip stack for a $300 starting value"""
         return cls({'$1': 25, '$5': 5, '$10': 3, '$20': 1, '$25': 0, '$50': 2, '$100': 1})
 
+    @classmethod
+    def from_dealer_stack(cls) -> ChipStack:
+        """Initializes the chip stack for a high number of chips to act at the House"""
+        return cls({'$1': 1000, '$5': 1000, '$10': 1000, '$20': 1000, '$25': 1000, '$50': 1000, '$100': 1000}, 'dealer')
+
     # =========== Helper Methods ===========
     @property
     def stack_value(self) -> int:
@@ -30,7 +35,7 @@ class ChipStack:
         return chip_sum
 
     def view_stack(self, tabular: bool = False) -> None:
-        if not tabular:
+        if not tabular and self.name != 'dealer':  # dealer should always be printed tabularly
             output: List[str] = []
             for denom, qty in self.stack.items():
                 temp = '{0} :{1}'.format(denom.rjust(4), ChipStack.CHIP_COLORS[denom]) + \
