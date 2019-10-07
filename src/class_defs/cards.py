@@ -98,7 +98,7 @@ class StandardDeck:
 
 class Stack(Generic[T]):
     # =========== Constructors ===========
-    def __init__(self, item_list: Optional[List[T]]) -> None:
+    def __init__(self, item_list: Optional[List[T]] = None) -> None:
         if item_list is None:
             self.stack: Optional[List[T]] = []
         else:
@@ -121,7 +121,7 @@ class Stack(Generic[T]):
 
 class CardPile(Stack[Card]):
     # =========== Constructors ===========
-    def __init__(self, item_list: Optional[List[T]]) -> None:
+    def __init__(self, item_list: Optional[List[T]] = None) -> None:
         super(CardPile, self).__init__(item_list)
 
     @classmethod

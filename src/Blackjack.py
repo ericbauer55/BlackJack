@@ -139,12 +139,14 @@ class BlackJack:
         If the draw pile doesn't have enough cards left in it for all players, the remainder will be dealt
         and the discard pile will be shuffled in.
         """
-
         for player in players:
             for i in range(n_cards):
                 # check to see if draw pile still has cards in it
-
-                # if not, shuffle discard pile into draw pile and continue
+                if self.draw_pile.n_items == 0:
+                    # if not, shuffle discard pile into draw pile and continue
+                    for _ in range(self.discard_pile.n_items):
+                        self.draw_pile.add(self.discard_pile.draw())
+                    self.draw_pile.shuffle()
 
                 visible: bool = True if n_visible > 0 else False  # flag to see if this card is visible
                 player.draw(self.draw_pile, n_cards=n_cards, all_visible=visible)
@@ -160,16 +162,16 @@ class BlackJack:
         if is_blackjack:
             # Dealer pays out to the player
             # assume rounding down is house cut
-            payout_value: int = int(payout_rate * self.player.pot.stack_value)
+            payout_value: int = int(payout_rate * player.pot.stack_value)
             n_payout_chips: Dict[str, int] = ChipStack.get_chips_from_amount(payout_value, denom_pref='high')
-            self.dealer.payout_chips(self.player.pot, n_payout_chips)
+            self.dealer.payout_chips(player.pot, n_payout_chips)
             # Remove player from dealt_in list
             self.dealt_in_players.remove(player.name)
             print('{0} has gotten blackjack and wins ${1}'.format(player.name, payout_value))
             out_of_game = True
         elif BlackJack.is_bust(player):
             # Player pays out to dealer
-            self.player.payout_all(self.dealer.pot)
+            player.payout_all(self.dealer.pot)
             # Remove player from dealt_in list
             self.dealt_in_players.remove(player.name)
             print('{0} has busted and loses ${1}'.format(player.name, player.pot.stack_value))
@@ -228,3 +230,4 @@ class BlackJack:
 
 if __name__ == '__main__':
     game = BlackJack()
+    game.play()
