@@ -77,56 +77,6 @@ class BlackJack:
 
     # =========== Game Actions ===========
     # These are the fundamental operations of a game
-    def init_hand(self, buy_in: int = 1):
-        """This initializes a hand of blackjack with a minimum buy-in of :param buy_in dollars."""
-        # zeroth check to make sure buy_in denom is in the standard chip denoms
-        buy_in_key = ChipStack.get_chip_string(buy_in)
-        if buy_in_key not in ChipStack.get_empty_stack().keys():
-            raise KeyError('The buy-in value of \'{}\' is not in the standard denominations'.format(buy_in_key))
-        # first check if all players want to buy-in to the hand
-        self.dealt_in_players = list(self.players.keys())  # deal in all players initially
-        self.take_bets(min_bet=buy_in)
-        # second deal hands to all players that are still dealt-in
-        self.deal_cards(list(self.players.values()), n_cards=2, n_visible=2)  # two face up
-        self.deal_cards([self.dealer], n_cards=1, n_visible=1)  # one face up
-        self.deal_cards([self.dealer], n_cards=1, n_visible=0)  # one face down
-        # print out the hands for all players and their bets
-        for player_name in self.dealt_in_players:
-            self.players[player_name].view_hand(all_visible=True)
-        # lastly check for any naturals or busts before moving to game loop
-        self.check_for_payouts(end_of_hand=False)
-        return  # move to the next state of gameplay
-
-    def loop_hand(self) -> None:
-        """This runs the game in the looping state until an exit condition (all players 'stay') is reached"""
-        # get the actions of each player
-        actions: List[str] = [''] * len(self.players.keys())
-        for i, player_name in enumerate(self.dealt_in_players):
-            out_of_game: bool = False
-            while actions[i] != 'stand' and not out_of_game:
-                if player_name == 'human':
-                    actions[i] = get_valid_input('Would you like to hit or stand?\n>', ['hit', 'stand'])
-                else:
-                    # TODO: implement get_card_action for NPC subclass of player
-                    #actions[i] = self.players[player_name].get_card_action(game='blackjack')
-                    pass
-                if actions[i] == 'hit':
-                    self.deal_cards([self.players[player_name]], n_cards=1, n_visible=1)
-                    self.players[player_name].view_hand()
-                    out_of_game = self.check_for_payout(self.players[player_name])
-        return  # move to the next state of gameplay
-
-    def finish_hand(self) -> None:
-        """After exit condition for looping state is reached, this method finishes the hand"""
-        # get the hit/stay actions of the dealer after all other players have stayed
-        # Dealer turns up their face down card
-
-        # Continue hitting until value of hand is 17 or more
-        # NOTE: aces count as 11 if doing so brings hand value to 17 or more (but not over 21)
-
-        # if the dealer busts, that is handled in the payouts phase next:
-        self.check_for_payouts(end_of_hand=True)
-
     def take_bets(self, min_bet: int = 1) -> None:
         """This function checks if each dealt-in player wants to place a bet, with some minimum imposed"""
         #for player_name, player_obj in self.players.items():  # the dealer doesn't have to buy-in; they are the house
@@ -224,12 +174,62 @@ class BlackJack:
     # =========== Control Flow Actions ===========
     # These are the functions that solicit user input and control the order of game operations
     def play(self) -> None:
-        print('Starting New Hand'.center(50, '='))
-        self.init_hand()
-        print('Beginning Hand Loop'.center(50, '='))
-        self.loop_hand()
-        print('Finishing the Hand'.center(50, '='))
-        self.finish_hand()
+        print('[Starting New Hand]'.center(50, '='))
+        self._init_hand()
+        print('[Beginning Hand Loop]'.center(50, '='))
+        self._loop_hand()
+        print('[Finishing the Hand]'.center(50, '='))
+        self._finish_hand()
+
+    def _init_hand(self, buy_in: int = 1):
+        """This initializes a hand of blackjack with a minimum buy-in of :param buy_in dollars."""
+        # zeroth check to make sure buy_in denom is in the standard chip denoms
+        buy_in_key = ChipStack.get_chip_string(buy_in)
+        if buy_in_key not in ChipStack.get_empty_stack().keys():
+            raise KeyError('The buy-in value of \'{}\' is not in the standard denominations'.format(buy_in_key))
+        # first check if all players want to buy-in to the hand
+        self.dealt_in_players = list(self.players.keys())  # deal in all players initially
+        self.take_bets(min_bet=buy_in)
+        # second deal hands to all players that are still dealt-in
+        self.deal_cards(list(self.players.values()), n_cards=2, n_visible=2)  # two face up
+        self.deal_cards([self.dealer], n_cards=1, n_visible=1)  # one face up
+        self.deal_cards([self.dealer], n_cards=1, n_visible=0)  # one face down
+        # print out the hands for all players and their bets
+        for player_name in self.dealt_in_players:
+            self.players[player_name].view_hand(all_visible=True)
+        # lastly check for any naturals or busts before moving to game loop
+        self.check_for_payouts(end_of_hand=False)
+        return  # move to the next state of gameplay
+
+    def _loop_hand(self) -> None:
+        """This runs the game in the looping state until an exit condition (all players 'stay') is reached"""
+        # get the actions of each player
+        actions: List[str] = [''] * len(self.players.keys())
+        for i, player_name in enumerate(self.dealt_in_players):
+            out_of_game: bool = False
+            while actions[i] != 'stand' and not out_of_game:
+                if player_name == 'human':
+                    actions[i] = get_valid_input('Would you like to hit or stand?\n>', ['hit', 'stand'])
+                else:
+                    # TODO: implement get_card_action for NPC subclass of player
+                    #actions[i] = self.players[player_name].get_card_action(game='blackjack')
+                    pass
+                if actions[i] == 'hit':
+                    self.deal_cards([self.players[player_name]], n_cards=1, n_visible=1)
+                    self.players[player_name].view_hand()
+                    out_of_game = self.check_for_payout(self.players[player_name])
+        return  # move to the next state of gameplay
+
+    def _finish_hand(self) -> None:
+        """After exit condition for looping state is reached, this method finishes the hand"""
+        # get the hit/stay actions of the dealer after all other players have stayed
+        # Dealer turns up their face down card
+
+        # Continue hitting until value of hand is 17 or more
+        # NOTE: aces count as 11 if doing so brings hand value to 17 or more (but not over 21)
+
+        # if the dealer busts, that is handled in the payouts phase next:
+        self.check_for_payouts(end_of_hand=True)
 
 
 if __name__ == '__main__':
