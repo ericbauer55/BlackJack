@@ -187,8 +187,7 @@ class BlackJack:
         Additionally, if its the end of the hand, the scores vs. the dealer are checked and paid put
         """
         max_dealer_hand_value: int = max(BlackJack.get_hand_value(self.dealer))
-        if max_dealer_hand_value > 21:
-            dealer_busted: bool = True
+        dealer_busted: bool = True if max_dealer_hand_value > 21 else False
         for player_name in self.dealt_in_players:
             if end_of_hand:
                 # This will be used later for checking payouts at the end of a hand
