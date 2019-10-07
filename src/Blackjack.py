@@ -88,23 +88,49 @@ class BlackJack:
         self.dealt_in_players = list(self.players.keys())  # deal in all players initially
         self.take_bets(min_bet=buy_in)
         # second deal hands to all players that are still dealt-in
-        self.deal_cards()
+        self.deal_cards(list(self.players.values()), n_cards=2, n_visible=2)  # two face up
+        self.deal_cards([self.dealer], n_cards=1, n_visible=1)  # one face up
+        self.deal_cards([self.dealer], n_cards=1, n_visible=0)  # one face down
         # lastly check for any naturals or busts before moving to game loop
-        self.check_for_payouts()
+        self.check_for_payouts(end_of_hand=False)
+        return  # move to the next state of gameplay
 
     def loop_hand(self) -> None:
         """This runs the game in the looping state until an exit condition (all players 'stay') is reached"""
-        pass
+        # get the actions of each player
+        actions: List[str] = [''] * len(self.players.keys())
+        for i, player_name in enumerate(self.dealt_in_players):
+            out_of_game: bool = False
+            while actions[i] != 'stand' and not out_of_game:
+                if player_name == 'human':
+                    actions[i] = get_valid_input('Would you like to hit or stand?', ['hit', 'stand'])
+                else:
+                    # TODO: implement get_card_action for NPC subclass of player
+                    #actions[i] = self.players[player_name].get_card_action(game='blackjack')
+                    pass
+                if actions[i] == 'hit':
+                    self.deal_cards([self.players[player_name]], n_cards=1, n_visible=1)
+                    self.players[player_name].view_hand()
+                    out_of_game = self.check_for_payout(self.players[player_name])
+        return  # move to the next state of gameplay
 
     def finish_hand(self) -> None:
         """After exit condition for looping state is reached, this method finishes the hand"""
-        pass
+        # get the hit/stay actions of the dealer after all other players have stayed
+        # Dealer turns up their face down card
+
+        # Continue hitting until value of hand is 17 or more
+        # NOTE: aces count as 11 if doing so brings hand value to 17 or more (but not over 21)
+
+        # if the dealer busts, that is handled in the payouts phase next:
+        self.check_for_payouts(end_of_hand=True)
 
     def take_bets(self, min_bet: int = 1) -> None:
         """This function checks if each dealt-in player wants to place a bet, with some minimum imposed"""
-        for player_name, player_obj in self.players.items():  # the dealer doesn't have to buy-in; they are the house
-            # check if player even has the buy-in amount
-            valid_bets: List[str]
+        #for player_name, player_obj in self.players.items():  # the dealer doesn't have to buy-in; they are the house
+        #    # check if player even has the buy-in amount
+        #    valid_bets: List[str]
+        pass
 
     def deal_cards(self, players: List[Player], n_cards: int = 1, n_visible: Optional[int] = None) -> None:
         """
@@ -115,32 +141,51 @@ class BlackJack:
         """
         pass
 
+    def check_for_payout(self, player: Player) -> bool:
+        """
+        This function checks to see if a single player (not a dealer) has gotten blackjack or busted.
+        If they have, then return out_of_game=True for 'removal from dealt-in players logic'
+        """
+        out_of_game: bool = False
+        (is_blackjack, payout_rate) = BlackJack.is_blackjack(player)
+        if is_blackjack:
+            # Dealer pays out to the player
+            # assume rounding down is house cut
+            payout_value: int = int(payout_rate * self.player.pot.stack_value)
+            n_payout_chips: Dict[str, int] = ChipStack.get_chips_from_amount(payout_value, denom_pref='high')
+            self.dealer.payout_chips(self.player.pot, n_payout_chips)
+            # Remove player from dealt_in list
+            self.dealt_in_players.remove(player.name)
+            print('{0} has gotten blackjack and wins ${1}'.format(player.name, payout_value))
+            out_of_game = True
+        elif BlackJack.is_bust(player):
+            # Player pays out to dealer
+            self.player.payout_all(self.dealer.pot)
+            # Remove player from dealt_in list
+            self.dealt_in_players.remove(player.name)
+            print('{0} has busted and loses ${1}'.format(player.name, player.pot.stack_value))
+            out_of_game = True
+        return out_of_game
+
     def check_for_payouts(self, end_of_hand: bool = False) -> None:
+        """
+        This function checks to see all players have gotten blackjack or busted.
+        If they have, then they are removed from the dealt-in players list and payouts go accordingly.
+        Additionally, if its the end of the hand, the scores vs. the dealer are checked and paid put
+        """
         max_dealer_hand_value: int = max(BlackJack.get_hand_value(self.dealer))
         if max_dealer_hand_value > 21:
             dealer_busted: bool = True
         for player_name in self.dealt_in_players:
             if end_of_hand:
                 # This will be used later for checking payouts at the end of a hand
-                max_player_hand_value = max(BlackJack.get_hand_value(self.players[player_name]))
+                max_player_hand_value: int = max(BlackJack.get_hand_value(self.players[player_name]))
 
-            (is_blackjack, payout_rate) = BlackJack.is_blackjack(self.players[player_name])
-            if is_blackjack:
-                # Dealer pays out to the player
-                # assume rounding down is house cut
-                payout_value: int = int(payout_rate * self.players[player_name].pot.stack_value)
-                n_payout_chips: Dict[str, int] = ChipStack.get_chips_from_amount(payout_value, denom_pref='high')
-                self.dealer.payout_chips(self.players[player_name].pot, n_payout_chips)
-                # Remove player from dealt_in list
-                self.dealt_in_players.remove(player_name)
-                print('{0} has gotten blackjack and wins ${1}'.format(player_name, payout_value))
-            elif BlackJack.is_bust(self.players[player_name]):
-                # Player pays out to dealer
-                self.players[player_name].payout_all(self.dealer.pot)
-                # Remove player from dealt_in list
-                self.dealt_in_players.remove(player_name)
-                print('{0} has busted and loses ${1}'.format(player_name, self.players[player_name].pot.stack_value))
-            elif end_of_hand and (max_player_hand_value > max_dealer_hand_value or dealer_busted):
+            out_of_game = self.check_for_payout(self.players[player_name])
+            if out_of_game:
+                continue  # don't continue to check other conditions
+
+            if end_of_hand and (max_player_hand_value > max_dealer_hand_value or dealer_busted):
                 # Dealer pays out to the player
                 # assume rounding down is house cut
                 payout_value: int = int(1.5 * self.players[player_name].pot.stack_value)
