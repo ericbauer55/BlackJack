@@ -46,8 +46,7 @@ class BlackJack:
             # if n_combs = 4, then this loops over [0, 1, 2, 3] = 0b[00, 01, 10, 11]
             # Each bit place of 0bXX represents the option of one ace's value,
             # where ACE_VALUES[0] = 2, ACE_VALUES[1] = 11
-            b: bytes = i.to_bytes(1, byteorder='big', signed=False)
-            ace_values: List[int] = [ACE_VALUES[(b >> i) and 1] for i in range(0, n_combs)]
+            ace_values: List[int] = [ACE_VALUES[(i >> k) and 1] for k in range(0, n_combs)]
             total[i] += sum(ace_values)
 
         return tuple(total)
