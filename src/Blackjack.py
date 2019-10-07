@@ -10,7 +10,6 @@ class BlackJack:
     def __init__(self):
         # Setup the Players
         self.dealer: Player = Player(name='dealer', chips=ChipStack.from_dealer_stack())
-        self.dealer.chips.view_stack()
         self.players: Dict[str, Player] = {'human': Player('human', ChipStack.from_standard_stack())}
         self.dealt_in_players: List[str] = list(self.players.keys())  # deal-in all players initially
         # Setup the Decks
@@ -91,6 +90,9 @@ class BlackJack:
         self.deal_cards(list(self.players.values()), n_cards=2, n_visible=2)  # two face up
         self.deal_cards([self.dealer], n_cards=1, n_visible=1)  # one face up
         self.deal_cards([self.dealer], n_cards=1, n_visible=0)  # one face down
+        # print out the hands for all players and their bets
+        for player_name in self.dealt_in_players:
+            self.players[player_name].view_hand(all_visible=True)
         # lastly check for any naturals or busts before moving to game loop
         self.check_for_payouts(end_of_hand=False)
         return  # move to the next state of gameplay
@@ -103,7 +105,7 @@ class BlackJack:
             out_of_game: bool = False
             while actions[i] != 'stand' and not out_of_game:
                 if player_name == 'human':
-                    actions[i] = get_valid_input('Would you like to hit or stand?', ['hit', 'stand'])
+                    actions[i] = get_valid_input('Would you like to hit or stand?\n>', ['hit', 'stand'])
                 else:
                     # TODO: implement get_card_action for NPC subclass of player
                     #actions[i] = self.players[player_name].get_card_action(game='blackjack')
@@ -149,7 +151,7 @@ class BlackJack:
                     self.draw_pile.shuffle()
 
                 visible: bool = True if n_visible > 0 else False  # flag to see if this card is visible
-                player.draw(self.draw_pile, n_cards=n_cards, all_visible=visible)
+                player.draw(self.draw_pile, n_cards=1, all_visible=visible)
                 n_visible -= 1
 
     def check_for_payout(self, player: Player) -> bool:
@@ -223,8 +225,11 @@ class BlackJack:
     # =========== Control Flow Actions ===========
     # These are the functions that solicit user input and control the order of game operations
     def play(self) -> None:
+        print('Starting New Hand'.center(50, '='))
         self.init_hand()
+        print('Beginning Hand Loop'.center(50, '='))
         self.loop_hand()
+        print('Finishing the Hand'.center(50, '='))
         self.finish_hand()
 
 
