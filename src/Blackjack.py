@@ -106,31 +106,62 @@ class BlackJack:
             # check if player even has the buy-in amount
             valid_bets: List[str]
 
-    def deal_cards(self, players: List[Player], n_cards: int = 1):
+    def deal_cards(self, players: List[Player], n_cards: int = 1, n_visible: Optional[int] = None) -> None:
         """
-        This function deals :param n_cards to each player in the list :param players
+        This function deals :param n_cards to each player in the list :param players. This is specified this way so that
+        the dealer can deal to himself separately from players
         If the draw pile doesn't have enough cards left in it for all players, the remainder will be dealt
         and the discard pile will be shuffled in.
         """
         pass
 
-    def check_for_payouts(self) -> None:
+    def check_for_payouts(self, end_of_hand: bool = False) -> None:
+        max_dealer_hand_value: int = max(BlackJack.get_hand_value(self.dealer))
+        if max_dealer_hand_value > 21:
+            dealer_busted: bool = True
         for player_name in self.dealt_in_players:
+            if end_of_hand:
+                # This will be used later for checking payouts at the end of a hand
+                max_player_hand_value = max(BlackJack.get_hand_value(self.players[player_name]))
+
             (is_blackjack, payout_rate) = BlackJack.is_blackjack(self.players[player_name])
             if is_blackjack:
                 # Dealer pays out to the player
                 # assume rounding down is house cut
-                payout_value: int = int(payout_rate * self.players[player_name].chips.stack_value)
-                payout_chips: Dict[str, int] = ChipStack.get_chips_from_amount(payout_value, denom_pref='high')
-                self.dealer.payout_chips(self.players[player_name].pot, payout_chips)
+                payout_value: int = int(payout_rate * self.players[player_name].pot.stack_value)
+                n_payout_chips: Dict[str, int] = ChipStack.get_chips_from_amount(payout_value, denom_pref='high')
+                self.dealer.payout_chips(self.players[player_name].pot, n_payout_chips)
                 # Remove player from dealt_in list
                 self.dealt_in_players.remove(player_name)
-                pass
-            if BlackJack.is_bust(self.players[player_name]):
+                print('{0} has gotten blackjack and wins ${1}'.format(player_name, payout_value))
+            elif BlackJack.is_bust(self.players[player_name]):
                 # Player pays out to dealer
                 self.players[player_name].payout_all(self.dealer.pot)
                 # Remove player from dealt_in list
                 self.dealt_in_players.remove(player_name)
+                print('{0} has busted and loses ${1}'.format(player_name, self.players[player_name].pot.stack_value))
+            elif end_of_hand and (max_player_hand_value > max_dealer_hand_value or dealer_busted):
+                # Dealer pays out to the player
+                # assume rounding down is house cut
+                payout_value: int = int(1.5 * self.players[player_name].pot.stack_value)
+                n_payout_chips: Dict[str, int] = ChipStack.get_chips_from_amount(payout_value, denom_pref='high')
+                self.dealer.payout_chips(self.players[player_name].pot, n_payout_chips)
+                # Remove player from dealt_in list
+                self.dealt_in_players.remove(player_name)
+                # Print the results
+                self.players[player_name].view_hand(self.dealer, all_visible=True)
+                if dealer_busted:
+                    print('Dealer busts so {0} wins ${1}'.format(player_name, payout_value))
+                else:
+                    print('{0} beat the dealer and wins ${1}'.format(player_name, payout_value))
+            elif end_of_hand and not dealer_busted and (max_player_hand_value < max_dealer_hand_value):
+                # Player pays out to dealer
+                self.players[player_name].payout_all(self.dealer.pot)
+                # Remove player from dealt_in list
+                self.dealt_in_players.remove(player_name)
+                # Print the results
+                self.players[player_name].view_hand(self.dealer, all_visible=True)
+                print('Dealer did not bust and beats {0}\'s hand. {0} loses ${1}'.format(player_name, payout_value))
 
 
     # =========== Control Flow Actions ===========
@@ -139,6 +170,7 @@ class BlackJack:
         self.init_hand()
         self.loop_hand()
         self.finish_hand()
+
 
 if __name__ == '__main__':
     game = BlackJack()
