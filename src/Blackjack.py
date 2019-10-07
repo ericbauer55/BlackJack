@@ -38,6 +38,8 @@ class BlackJack:
             else:
                 # otherwise add the pip value of the card
                 total[0] += int(card.value)
+        if n_aces == 0:
+            return tuple(total)
         # next figure out the potential values of the hand with all the aces
         n_combs = 2 ** n_aces
         total *= n_combs  # duplicate the base sum 2^n_aces times
@@ -197,6 +199,7 @@ class BlackJack:
         # print out the hands for all players and their bets
         for player_name in self.dealt_in_players:
             self.players[player_name].view_hand(all_visible=True)
+        self.dealer.view_hand()
         # lastly check for any naturals or busts before moving to game loop
         self.check_for_payouts(end_of_hand=False)
         return  # move to the next state of gameplay
