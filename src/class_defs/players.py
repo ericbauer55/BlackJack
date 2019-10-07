@@ -45,6 +45,8 @@ class Player:
     # =========== Helper Methods ===========
     @property
     def hand(self) -> List[Card]:
+        """This is a shortcut for getting the list of cards stored in the player's CardHand object
+        This prevents calls like player.hand.hand"""
         return self._player_hand.hand
 
     def dispatch_action(self, action_method: Callable):
