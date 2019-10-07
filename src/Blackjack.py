@@ -139,7 +139,16 @@ class BlackJack:
         If the draw pile doesn't have enough cards left in it for all players, the remainder will be dealt
         and the discard pile will be shuffled in.
         """
-        pass
+
+        for player in players:
+            for i in range(n_cards):
+                # check to see if draw pile still has cards in it
+
+                # if not, shuffle discard pile into draw pile and continue
+
+                visible: bool = True if n_visible > 0 else False  # flag to see if this card is visible
+                player.draw(self.draw_pile, n_cards=n_cards, all_visible=visible)
+                n_visible -= 1
 
     def check_for_payout(self, player: Player) -> bool:
         """
