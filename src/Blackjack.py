@@ -54,11 +54,21 @@ class BlackJack:
 
     @staticmethod
     def is_bust(player: Player) -> bool:
-        pass
+        """If all of the possible values are above 21, then the player has busted"""
+        hand_values: Tuple[int] = BlackJack.get_hand_value(player)
+        if all([value > 21 for value in hand_values]):
+            return True
+        else:
+            return False
 
     @staticmethod
     def is_blackjack(player: Player) -> bool:
-        pass
+        """If any of the possible values are equal to 21, then the player has gotten blackjack"""
+        hand_values: Tuple[int] = BlackJack.get_hand_value(player)
+        if any([value == 21 for value in hand_values]):
+            return True
+        else:
+            return False
 
     # =========== Game Actions ===========
     # These are the fundamental operations of a game
