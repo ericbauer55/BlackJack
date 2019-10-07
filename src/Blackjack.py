@@ -61,13 +61,17 @@ class BlackJack:
             return False
 
     @staticmethod
-    def is_blackjack(player: Player) -> bool:
-        """If any of the possible values are equal to 21, then the player has gotten blackjack"""
+    def is_blackjack(player: Player) -> Tuple[bool, float]:
+        """If any of the possible values are equal to 21, then the player has gotten blackjack
+        If there was a Blackjack, then the payout rate is 1:1 is Ace + 10-card, or 3:2 otherwise"""
         hand_values: Tuple[int] = BlackJack.get_hand_value(player)
         if any([value == 21 for value in hand_values]):
-            return True
+            # if player.hand contains an ace & a 10 or J,K,Q then return 1.0
+            # else return 1.5 for rate
+            blackjack, payout_rate = True, 1.0
         else:
-            return False
+            blackjack, payout_rate = False, 0
+        return blackjack, payout_rate
 
     # =========== Game Actions ===========
     # These are the fundamental operations of a game
@@ -109,9 +113,9 @@ class BlackJack:
 
     def check_for_payouts(self) -> None:
         for player_name in self.dealt_in_players:
-            if BlackJack.is_blackjack(self.players[player_name]):
+            (is_blackjack, payout_rate) = BlackJack.is_blackjack(self.players[player_name])
+            if is_blackjack:
                 # Dealer pays out to the player
-                payout_rate: float = BlackJack.get_payout_rate(self.players[player_name])  # see if 1:1 or 3:2
                 # assume rounding down is house cut
                 payout_value: int = int(payout_rate * self.players[player_name].chips.stack_value)
                 payout_chips: Dict[str, int] = ChipStack.get_chips_from_amount(payout_value)
@@ -124,6 +128,7 @@ class BlackJack:
                 self.players[player_name].payout_all(self.dealer.pot)
                 # Remove player from dealt_in list
                 self.dealt_in_players.remove(player_name)
+
 
     # =========== Control Flow Actions ===========
     # These are the functions that solicit user input and control the order of game operations
