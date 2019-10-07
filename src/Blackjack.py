@@ -11,16 +11,26 @@ class BlackJack:
         # Setup the Players
         self.dealer: Player = Player(name='dealer', chips=ChipStack.from_dealer_stack())
         self.dealer.chips.view_stack()
-        self.players: Dict[str, Dict[str, object]] = {'Human':
-                                                          {'player': Player('human', ChipStack.from_standard_stack()),
-                                                           'pot': ChipStack()}}  # pot could point to a common pot obj.
+        self.players: Dict[str, Player] = {'human': Player('human', ChipStack.from_standard_stack())}
         # Setup the Decks
         self.draw_pile: CardPile = CardPile.from_standard_deck()
         self.discard_pile: CardPile = CardPile()
 
     # =========== Helper Methods ===========
+    @staticmethod
+    def get_hand_value(player: Player) -> int:
+        pass
+
+    @staticmethod
+    def is_bust(player: Player) -> bool:
+        pass
+
+    @staticmethod
+    def is_blackjack(player: Player) -> bool:
+        pass
 
     # =========== Game Actions ===========
+    # These are the fundamental operations of a game
     def init_hand(self, buy_in: int=1):
         """This initializes a hand of blackjack with a minimum buy-in of :param buy_in dollars."""
         # zeroth check to make sure buy_in denom is in the standard chip denoms
@@ -32,7 +42,7 @@ class BlackJack:
             pass
 
     # =========== Control Flow Actions ===========
-
+    # These are the functions that solicit user input and control the order of game operations
 
 if __name__ == '__main__':
     game = BlackJack()

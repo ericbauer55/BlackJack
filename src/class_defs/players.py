@@ -24,12 +24,15 @@ def get_valid_input(input_prompt: str, valid_input_list: List[str]) -> str:
 class Player:
     # =========== Constructors ===========
     def __init__(self, name: str = '', chips: Optional[ChipStack] = None, hand: Optional[CardHand] = None,
-                 action_set: Optional[ActionSet] = None) -> None:
+                 pot: Optional[ChipStack] = None, action_set: Optional[ActionSet] = None) -> None:
         self.name: str = name
         if chips is None:
             chips = ChipStack()
         if hand is None:
             hand = CardHand()
+        if pot is None:
+            pot = ChipStack()
+        self.pot = pot  # unless there is a shared pot object passed in, each player instance gets its own pot instance
         self.chips: ChipStack = chips  # empty stack unless otherwise specified
         self._player_hand: CardHand = hand
         if action_set is None:
