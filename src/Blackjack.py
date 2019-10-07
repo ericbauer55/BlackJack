@@ -68,7 +68,7 @@ class BlackJack:
         if any([value == 21 for value in hand_values]):
             blackjack = True
             # if player.hand contains an ace & a 10 or J,K,Q then return 1.0
-            if player.hand_contains(values=['A']) and any(player.hand_contains(values=['10', 'J', 'Q', 'K'])):
+            if player.hand_contains_values(['A']) and player.hand_contains_values(['10', 'J', 'Q', 'K']):
                 payout_rate = 1.0
             else:
                 payout_rate = 1.5
