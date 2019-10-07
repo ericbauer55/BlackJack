@@ -66,9 +66,12 @@ class BlackJack:
         If there was a Blackjack, then the payout rate is 1:1 is Ace + 10-card, or 3:2 otherwise"""
         hand_values: Tuple[int] = BlackJack.get_hand_value(player)
         if any([value == 21 for value in hand_values]):
+            blackjack = True
             # if player.hand contains an ace & a 10 or J,K,Q then return 1.0
-            # else return 1.5 for rate
-            blackjack, payout_rate = True, 1.0
+            if player.hand_contains(values=['A']) and any(player.hand_contains(values=['10', 'J', 'Q', 'K'])):
+                payout_rate = 1.0
+            else:
+                payout_rate = 1.5
         else:
             blackjack, payout_rate = False, 0
         return blackjack, payout_rate
