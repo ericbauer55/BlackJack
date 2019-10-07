@@ -114,6 +114,10 @@ class Stack(Generic[T]):
     def peak(self) -> T:
         return self.stack[-1]
 
+    @property
+    def n_items(self) -> int:
+        return len(self.stack)
+
 
 class CardPile(Stack[Card]):
     # =========== Constructors ===========
