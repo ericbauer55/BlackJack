@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import List, Dict, Optional, Callable
 from src.class_defs.chip_stack import ChipStack
-from src.class_defs.cards import Card, CardPile, CardHand
+from src.class_defs.cards import Card, CardPile, CardHand, Suit
 
 ActionSet = Dict[str, Dict[str, Callable]]
 
@@ -51,6 +51,18 @@ class Player:
 
     def dispatch_action(self, action_method: Callable):
         pass
+
+    def hand_contains_values(self, values: List[str]) -> bool:
+        """This function returns true if the hand contains at least one card that has a matching value"""
+        if any([card.value in values for card in self.hand]):
+            return True
+
+    def hand_contains_suits(self, suits: List[Suit]) -> bool:
+        """This function returns true if the hand contains at least one card that has a matching suit"""
+        if any([card.suit in suits for card in self.hand]):
+            return True
+
+
 
     # =========== Player Card Actions ===========
     def view_hand(self, player: Optional[Player] = None, all_visible: bool = False) -> None:
