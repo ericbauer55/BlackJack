@@ -121,7 +121,7 @@ class BlackJack:
                 # Dealer pays out to the player
                 # assume rounding down is house cut
                 payout_value: int = int(payout_rate * self.players[player_name].chips.stack_value)
-                payout_chips: Dict[str, int] = ChipStack.get_chips_from_amount(payout_value)
+                payout_chips: Dict[str, int] = ChipStack.get_chips_from_amount(payout_value, denom_pref='high')
                 self.dealer.payout_chips(self.players[player_name].pot, payout_chips)
                 # Remove player from dealt_in list
                 self.dealt_in_players.remove(player_name)

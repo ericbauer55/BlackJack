@@ -16,6 +16,14 @@ class ChipStack:
             self._add_chips(stack)
 
     @classmethod
+    def from_amount(cls, amount: int = 300) -> ChipStack:
+        if amount == 300:
+            return cls.from_standard_stack()
+        temp: ChipStack = cls()
+        temp.get_chips_from_amount(amount)
+        return temp
+
+    @classmethod
     def from_standard_stack(cls) -> ChipStack:
         """Initializes the chip stack for a $300 starting value"""
         return cls({'$1': 25, '$5': 5, '$10': 3, '$20': 1, '$25': 0, '$50': 2, '$100': 1})
@@ -83,6 +91,32 @@ class ChipStack:
         Accordingly, it can be used first to create the chip stack dictionary to later initialize a ChipStack object
         """
         return {'$1': 0, '$5': 0, '$10': 0, '$20': 0, '$25': 0, '$50': 0, '$100': 0}
+
+    @staticmethod
+    def get_chips_from_amount(amount: int, denom_pref: str = 'high') -> Dict[str, int]:
+        """
+        This function returns a dictionary of chip denoms and their quantities based on an input dollar amount.
+        NOTE: this might be a knapsack problem
+        :param amount: the dollar amount to convert into chips
+        :param denom_pref: either 'high' or 'low'. If 'high' the chips returned will be as high of
+        denominations as possible. If 'low', all chips will be converted in $1 chips.
+        :return: dictionary of denomination keys and chip quantities as values
+        """
+        temp = ChipStack()  # get an empty chipstack
+        temp._add_chips({'$1': amount})
+        if denom_pref == 'low':
+            return temp.stack
+        denoms = list(temp.stack.keys())
+        for i in range(1, len(denoms)):
+            try:
+                # exchange all of a lower denom for the next higher denom
+                temp.exchange_chips(denom1=denoms[i-1], denom2=denoms[i])
+            except ValueError:
+                # do nothing since should only occur when converting from $50: 1 to $100: 0
+                pass
+        return temp.stack
+
+
 
     # =========== Chip Operations ===========
     def _add_chips(self, added_stack: Dict[str, int]) -> None:
