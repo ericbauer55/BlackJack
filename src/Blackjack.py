@@ -24,7 +24,9 @@ class BlackJack:
     def init_hand(self, buy_in: int=1):
         """This initializes a hand of blackjack with a minimum buy-in of :param buy_in dollars."""
         # zeroth check to make sure buy_in denom is in the standard chip denoms
-        if ChipStack
+        buy_in_key = ChipStack.get_chip_string(buy_in)
+        if buy_in_key not in ChipStack.get_empty_stack().keys():
+            raise KeyError('The buy-in value of \'{}\' is not in the standard denominations'.format(buy_in_key))
         # first check if all players want to buy-in to the hand
         for player_name, player_obj in self.players.items():
             pass

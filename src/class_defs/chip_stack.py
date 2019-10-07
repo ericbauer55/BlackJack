@@ -72,9 +72,9 @@ class ChipStack:
         return int(denom.strip('$'))
 
     @staticmethod
-    def get_chip_string(denom: str) -> int:
+    def get_chip_string(denom_value: int) -> str:
         """returns the denomination value string associated with a chip integer value"""
-        return int(denom.strip('$'))
+        return '${}'.format(denom_value)
 
     @staticmethod
     def get_empty_stack() -> Dict[str, int]:
