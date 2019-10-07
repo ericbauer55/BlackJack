@@ -93,6 +93,13 @@ class BlackJack:
                 # Remove player from dealt_in list
                 pass
 
+    def loop_hand(self) -> None:
+        """This runs the game in the looping state until an exit condition (all players 'stay') is reached"""
+        pass
+
+    def finish_hand(self) -> None:
+        """After exit condition for looping state is reached, this method finishes the hand"""
+        pass
 
     def take_bets(self, min_bet: int = 1) -> None:
         """This function checks if each dealt-in player wants to place a bet, with some minimum imposed"""
@@ -110,6 +117,10 @@ class BlackJack:
 
     # =========== Control Flow Actions ===========
     # These are the functions that solicit user input and control the order of game operations
+    def play(self) -> None:
+        self.init_hand()
+        self.loop_hand()
+        self.finish_hand()
 
 if __name__ == '__main__':
     game = BlackJack()
