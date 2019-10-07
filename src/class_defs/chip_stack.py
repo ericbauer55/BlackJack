@@ -31,7 +31,7 @@ class ChipStack:
         """This property gets the total value of the chips in the stack"""
         chip_sum = 0
         for denom, quantity in self.stack.items():
-            chip_sum += ChipStack._get_chip_value(denom) * quantity
+            chip_sum += ChipStack.get_chip_value(denom) * quantity
         return chip_sum
 
     def view_stack(self, tabular: bool = False) -> None:
@@ -55,7 +55,7 @@ class ChipStack:
         for denom, qty in self.stack.items():
             rows.append(h_line) # insert a filler horizontal line between each data row
             rows.append(['|', denom.center(col_widths[0]-1), '|', '{}'.format(qty).center(col_widths[1]-1), '|',
-                         '${}'.format(qty * ChipStack._get_chip_value(denom)).center(col_widths[2]-1), '|'])
+                         '${}'.format(qty * ChipStack.get_chip_value(denom)).center(col_widths[2]-1), '|'])
         # finish wrapping the table in good formatting & give it a label
         rows[1] = hb_line
         rows.append(hb_line)
@@ -67,12 +67,12 @@ class ChipStack:
         return '\n'.join(["".join(row) for row in rows])
 
     @staticmethod
-    def _get_chip_value(denom: str) -> int:
+    def get_chip_value(denom: str) -> int:
         """returns the integer value associated with a chip denomination"""
         return int(denom.strip('$'))
 
     @staticmethod
-    def _get_chip_string(denom: str) -> int:
+    def get_chip_string(denom: str) -> int:
         """returns the denomination value string associated with a chip integer value"""
         return int(denom.strip('$'))
 
@@ -112,7 +112,7 @@ class ChipStack:
         This function exchanges a quantity of denom1 for denom2
         Transaction occurs within a single ChipStack object
         """
-        denom1_value, denom2_value = ChipStack._get_chip_value(denom1), ChipStack._get_chip_value(denom2)
+        denom1_value, denom2_value = ChipStack.get_chip_value(denom1), ChipStack.get_chip_value(denom2)
 
         if quantity == -1:
             # exchange ALL chips of denom1 for denom2
