@@ -80,25 +80,6 @@ class CardHand:
         for name in card_names:
             other_hand.add_card(self.remove_card(name))
 
-
-class StandardDeck:
-    # =========== Constructors ===========
-    def __init__(self, visible: bool = False) -> None:
-        self.deck: List[Card] = []
-        for s in Suit:
-            for v in CARD_VALUES:
-                self.deck.append(Card(v, s, visible=visible))
-
-    # =========== Helper Methods ===========
-    def __str__(self) -> str:
-        deck_str: List[str] = []
-        for i in range(0, len(self.deck)):
-            if i > 0 and i % (len(self.deck) // 4) == 0:
-                deck_str.append('\n')
-            deck_str.append(self.deck[i].__str__())
-        return "".join(deck_str)
-
-
 class Stack(Generic[T]):
     # =========== Constructors ===========
     def __init__(self, item_list: Optional[List[T]] = None) -> None:
@@ -129,8 +110,11 @@ class CardPile(Stack[Card]):
 
     @classmethod
     def from_standard_deck(cls) -> CardPile:
-        std = StandardDeck()
-        return cls(std.deck)
+        deck: List[Card] = []
+        for s in Suit:
+            for v in CARD_VALUES:
+                deck.append(Card(v, s, visible=False))
+        return cls(deck)
 
     # =========== Helper Methods ===========
     @property
