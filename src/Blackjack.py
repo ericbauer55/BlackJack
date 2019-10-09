@@ -227,9 +227,35 @@ class BlackJack:
         """After exit condition for looping state is reached, this method finishes the hand"""
         # get the hit/stay actions of the dealer after all other players have stayed
         # Dealer turns up their face down card
-
+        self.dealer.view_hand(all_visible=True)
         # Continue hitting until value of hand is 17 or more
         # NOTE: aces count as 11 if doing so brings hand value to 17 or more (but not over 21)
+        dealer_stands: bool = False
+        while not dealer_stands:
+            hand_values: Tuple[int] = BlackJack.get_hand_value(self.dealer)
+            if len(hand_values) < 2:  # dealer has no aces to consider
+                if hand_values[0] >= 17:
+                    print('The dealer has 17 or more and must stand.')
+                    dealer_stands = True
+                else:
+                    print('The dealer only has {} and must hit.'.format(hand_values[0]))
+                    dealer_stands = False
+                    self.dealer.draw(self.draw_pile, n_cards=1, all_visible=True)
+                    self.dealer.view_hand(all_visible=True)
+            else:  # dealer has aces to consider
+                if any([17 <= x <= 21 for x in hand_values]):
+                    print('The dealer has 17 or more and must stand.')
+                    dealer_stands = True
+                else:
+                    hand_values = tuple([x for x in hand_values if x < 17])  # remove the values that would bust
+                    if len(hand_values) == 0:
+                        print('The dealer has 17 or more and must stand.')
+                        dealer_stands = True
+                    else:
+                        print('The dealer only has {} and must hit.'.format(min(hand_values)))
+                        dealer_stands = False
+                        self.dealer.draw(self.draw_pile, n_cards=1, all_visible=True)
+                        self.dealer.view_hand(all_visible=True)
 
         # if the dealer busts, that is handled in the payouts phase next:
         self.check_for_payouts(end_of_hand=True)
