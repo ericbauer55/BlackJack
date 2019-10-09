@@ -16,12 +16,8 @@ class ChipStack:
             self._add_chips(stack)
 
     @classmethod
-    def from_amount(cls, amount: int = 300) -> ChipStack:
-        if amount == 300:
-            return cls.from_standard_stack()
-        temp: ChipStack = cls()
-        temp.get_chips_from_amount(amount)
-        return temp
+    def from_amount(cls, amount: int = 211) -> ChipStack:
+        return cls(stack=ChipStack.get_chips_from_amount(amount))
 
     @classmethod
     def from_standard_stack(cls) -> ChipStack:
@@ -144,9 +140,21 @@ class ChipStack:
 
     def exchange_chips(self, denom1: str, denom2: str, quantity: int = -1) -> None:
         """
-        This function exchanges a quantity of denom1 for denom2
-        Transaction occurs within a single ChipStack object
+        This function exchanges a quantity of denom1 for denom2. Sometimes, the exchange rate and N1 quantity will not
+        exchange without a remainder. For example, 2x $25 chips converts to 2x $20 chips with $10 remainder. Both of
+        the $25 chips must be exchanged for the maximum number of $20 chips, but the remainder will be converted to a
+        set of chips with the highest denominations using the get_chips_from_amount function.
+        -The amount of denom2 chips gained is N2 = floor((denom1 * N)/denom2)
+        -The amount of denom1 chips left is N1' = N1 - N2 * ceil(denom2/denom1)
+        Example 1: denom1=$25, N1=3 exchanged for denom2=$20 gets N2 chips
+            N2 = floor((3 * $25)/$20) = floor(75/20) = 3
+            N1' = N1 - N2 * ceil(20/25) =
+        Example 2: denom1=$10, N1=5 exchanged for denom2=$25 gets N2 chips
+            N2 = floor((5 * $10)/$25) = floor(50/25) = 2
+            N1' = N1 - N2 * ceil(25/10)
+        Transaction occurs within a single ChipStack object, and doesn't transfer between stacks
         """
+        # TODO: figure out the exact formulas for N1 and N2
         denom1_value, denom2_value = ChipStack.get_chip_value(denom1), ChipStack.get_chip_value(denom2)
 
         if quantity == -1:
@@ -179,7 +187,7 @@ class ChipStack:
 
 
 if __name__ == '__main__':
-    cs = ChipStack.from_standard_stack()
+    cs = ChipStack.from_amount()
     cs.view_stack(tabular=True)
     print('-' * 50)
     cs.exchange_chips('$10', '$1')

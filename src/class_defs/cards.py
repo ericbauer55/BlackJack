@@ -118,7 +118,7 @@ class CardPile(Stack[Card]):
 
     # =========== Helper Methods ===========
     def __str__(self):
-        return self.peak().__str__().ljust(self.size - 1, ']')
+        return self.peak().__str__().ljust(self.n_items - 1, ']')
 
     # =========== Pile Operations ===========
     def draw(self) -> Card:
