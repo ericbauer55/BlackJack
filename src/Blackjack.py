@@ -207,6 +207,8 @@ class BlackJack:
             raise KeyError('The buy-in value of \'{}\' is not in the standard denominations'.format(buy_in_key))
         # also discard any cards in the hand already
         self.dealer.discard(self.discard_pile, [x.name for x in self.dealer.hand])  # TODO: refactor this...
+        for player in self.players.values():
+            player.discard(self.discard_pile, [x.name for x in player.hand])
         # first check if all players want to buy-in to the hand
         self.dealt_in_players = list(self.players.keys())  # deal in all players initially
         self.take_bets(min_bet=buy_in)
