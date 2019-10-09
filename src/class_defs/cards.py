@@ -18,6 +18,7 @@ class Suit(Enum):
 class Card:
     # =========== Constructors ===========
     def __init__(self, value: str, suit: Suit, visible: bool = False) -> None:
+        # TODO: refactor card.value to be card.rank
         self.value: str = value
         self.suit: Suit = suit
         self.visible: bool = visible
