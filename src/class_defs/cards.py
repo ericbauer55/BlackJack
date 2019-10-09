@@ -117,10 +117,6 @@ class CardPile(Stack[Card]):
         return cls(deck)
 
     # =========== Helper Methods ===========
-    @property
-    def size(self) -> int:
-        return len(self.stack)
-
     def __str__(self):
         return self.peak().__str__().ljust(self.size - 1, ']')
 
