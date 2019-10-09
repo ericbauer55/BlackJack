@@ -49,6 +49,10 @@ class Player:
         This prevents calls like player.hand.hand"""
         return self._player_hand.hand
 
+    @property
+    def bet(self) -> int:
+        return self.pot.stack_value
+
     def dispatch_action(self, action_method: Callable):
         pass
 

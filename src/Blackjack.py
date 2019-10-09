@@ -175,8 +175,15 @@ class BlackJack:
                 self.dealt_in_players.remove(player_name)
                 # Print the results
                 self.players[player_name].view_hand(self.dealer, all_visible=True)
-                print('Dealer did not bust and beats {0}\'s hand. {0} loses ${1}'.format(player_name, payout_value))
-
+                print('Dealer did not bust and beats {0}\'s hand. {0} loses ${1}'.format(player_name,
+                                                                                         self.players[player_name].bet))
+            elif end_of_hand and not dealer_busted and (max_player_hand_value == max_dealer_hand_value):
+                # Player does not lose their money, but doesn't get paid out.
+                self.players[player_name].payout_all(self.players[player_name].pot)  # return the money from pot
+                # Remove player from dealt_in list
+                self.dealt_in_players.remove(player_name)
+                print('Dealer ties {0}\'s hand. {0} is returned ${1}'.format(player_name,
+                                                                             self.players[player_name].bet))
 
     # =========== Control Flow Actions ===========
     # These are the functions that solicit user input and control the order of game operations
