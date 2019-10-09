@@ -205,6 +205,8 @@ class BlackJack:
         buy_in_key = ChipStack.get_chip_string(buy_in)
         if buy_in_key not in ChipStack.get_empty_stack().keys():
             raise KeyError('The buy-in value of \'{}\' is not in the standard denominations'.format(buy_in_key))
+        # also discard any cards in the hand already
+        self.dealer.discard(self.discard_pile, [x.name for x in self.dealer.hand])  # TODO: refactor this...
         # first check if all players want to buy-in to the hand
         self.dealt_in_players = list(self.players.keys())  # deal in all players initially
         self.take_bets(min_bet=buy_in)
@@ -260,7 +262,8 @@ class BlackJack:
                     self.dealer.draw(self.draw_pile, n_cards=1, all_visible=True)
                     self.dealer.view_hand(all_visible=True)
             else:  # dealer has aces to consider
-                if any([17 <= x <= 21 for x in hand_values]):
+                if any([17 <= x < 21 for x in hand_values]) or BlackJack.is_blackjack(self.dealer) \
+                                                            or BlackJack.is_bust(self.dealer):
                     print('The dealer has 17 or more and must stand.')
                     dealer_stands = True
                 else:
