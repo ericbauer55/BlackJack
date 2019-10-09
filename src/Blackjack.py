@@ -3,7 +3,7 @@ from src.class_defs.chip_stack import ChipStack
 from src.class_defs.cards import Card, CardPile, CardHand
 from src.class_defs.players import Player, get_valid_input
 from typing import Dict, List, Optional, Tuple
-
+import time
 
 class BlackJack:
     # =========== Constructors ===========
@@ -19,6 +19,11 @@ class BlackJack:
 
 
     # =========== Helper Methods ===========
+    @staticmethod
+    def pause(message: str = ''):
+        print(message + '...')
+        time.sleep(2)
+
     @staticmethod
     def get_hand_value(player: Player) -> Tuple[int]:
         """This returns the sum total value of the player's hand
@@ -176,11 +181,11 @@ class BlackJack:
     # =========== Control Flow Actions ===========
     # These are the functions that solicit user input and control the order of game operations
     def play(self) -> None:
-        print('[Starting New Hand]'.center(50, '='))
+        BlackJack.pause('[Starting New Hand]'.center(50, '=') + '\n')
         self._init_hand()
-        print('[Beginning Hand Loop]'.center(50, '='))
+        BlackJack.pause('[Going to Hit or Stand]'.center(50, '=') + '\n')
         self._loop_hand()
-        print('[Finishing the Hand]'.center(50, '='))
+        BlackJack.pause('[Finishing the Hand]'.center(50, '=') + '\n')
         self._finish_hand()
 
     def _init_hand(self, buy_in: int = 1):
@@ -232,6 +237,7 @@ class BlackJack:
         # NOTE: aces count as 11 if doing so brings hand value to 17 or more (but not over 21)
         dealer_stands: bool = False
         while not dealer_stands:
+            BlackJack.pause()
             hand_values: Tuple[int] = BlackJack.get_hand_value(self.dealer)
             if len(hand_values) < 2:  # dealer has no aces to consider
                 if hand_values[0] >= 17:
