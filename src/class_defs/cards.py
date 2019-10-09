@@ -26,6 +26,7 @@ class Card:
     # =========== Helper Methods ===========
     @property
     def name(self) -> str:
+        """This property wraps to_string but forces complete visibility"""
         return self.to_string(visible=True)
 
     def to_string(self, visible: bool = False) -> str:
@@ -50,12 +51,13 @@ class CardHand:
         self.hand: List[Card] = card_list
 
     # =========== Helper Methods ===========
-    def _get_card_index(self, card_name: str) -> int:
+    def get_card_index(self, card_name: str) -> int:
+        """Performs a linear search for a card with matching card name or throws error if not found"""
         for i, card in enumerate(self.hand):
             if card.name == card_name:
                 return i
-        # if card_name not found, raise value error
-        raise ValueError('No card with name "{}" was found in the hand'.format(card_name))
+        # if card_name not found, raise index error
+        raise IndexError('No card with name "{}" was found in the hand'.format(card_name))
 
     def to_string(self, all_visible: bool = False) -> str:
         """
@@ -71,7 +73,7 @@ class CardHand:
         self.hand.append(card)
 
     def remove_card(self, card_name: str) -> Card:
-        index = self._get_card_index(card_name)
+        index = self.get_card_index(card_name)
         return self.hand.pop(index)
 
     def transfer_cards(self, card_names: List[str], other_hand: CardHand) -> None:
