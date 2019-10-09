@@ -50,7 +50,7 @@ class Player:
         return self._player_hand.hand
 
     @property
-    def bet(self) -> int:
+    def bet_value(self) -> int:
         return self.pot.stack_value
 
     def dispatch_action(self, action_method: Callable):

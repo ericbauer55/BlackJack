@@ -77,6 +77,7 @@ class ChipStack:
     @staticmethod
     def get_chip_value(denom: str) -> int:
         """returns the integer value associated with a chip denomination"""
+        # maybe refactor into dictionary lookup?
         return int(denom.strip('$'))
 
     @staticmethod
