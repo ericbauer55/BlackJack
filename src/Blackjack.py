@@ -20,9 +20,9 @@ class BlackJack:
 
     # =========== Helper Methods ===========
     @staticmethod
-    def pause(message: str = ''):
+    def pause(message: str = '', delay: float = 1.5):
         print(message + '...')
-        time.sleep(2)
+        time.sleep(delay)
 
     @staticmethod
     def get_hand_value(player: Player) -> Tuple[int]:
