@@ -188,12 +188,16 @@ class BlackJack:
     # =========== Control Flow Actions ===========
     # These are the functions that solicit user input and control the order of game operations
     def play(self) -> None:
-        BlackJack.pause('[Starting New Hand]'.center(50, '=') + '\n')
-        self._init_hand()
-        BlackJack.pause('[Going to Hit or Stand]'.center(50, '=') + '\n')
-        self._loop_hand()
-        BlackJack.pause('[Finishing the Hand]'.center(50, '=') + '\n')
-        self._finish_hand()
+        play_again: bool = True
+        while play_again:
+            BlackJack.pause('[Starting New Hand]'.center(50, '=') + '\n')
+            self._init_hand()
+            BlackJack.pause('[Going to Hit or Stand]'.center(50, '=') + '\n')
+            self._loop_hand()
+            BlackJack.pause('[Finishing the Hand]'.center(50, '=') + '\n')
+            self._finish_hand()
+            command = get_valid_input('Play another hand? ', ['yes', 'no'])
+            play_again = True if command == 'yes' else False
 
     def _init_hand(self, buy_in: int = 1):
         """This initializes a hand of blackjack with a minimum buy-in of :param buy_in dollars."""
