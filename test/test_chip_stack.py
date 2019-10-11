@@ -53,7 +53,16 @@ class MyTestCase(unittest.TestCase):
 
     def test_add_chips_from_amount(self):
         cs = ChipStack()
-        cs.add_chips_from_amount()
+        cs.add_chips_from_amount(amount=201)  # sum of all the keys
+        self.assertEqual(cs.stack['$1'], 1)  # 201 -> $1: 1 and $5: 40
+        self.assertEqual(cs.stack['$5'], 0)  # 200 -> $5: 0 and $10: 20
+        self.assertEqual(cs.stack['$10'], 0)  # 200 -> $10: 0 and $20: 10
+        self.assertEqual(cs.stack['$20'], 0)  # 200 -> $20: 0 and $25: 8
+        self.assertEqual(cs.stack['$25'], 0)  # 200 -> $25: 0 and $50: 4
+        self.assertEqual(cs.stack['$50'], 0)  # 200 -> $50: 0 and $100: 2
+        self.assertEqual(cs.stack['$100'], 2)
+
+
 
     def remove_chips_for_amount(self):
         pass

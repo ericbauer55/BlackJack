@@ -159,11 +159,11 @@ class ChipStack:
             raise ValueError('You cannot exchange "{0}" for fractional "{1}"'.format(denom1, denom2))
         # add and remove the exchanged quantities
         add_stack: Dict[str, int] = {denom2: N2}
-        remainder_stack: Dict[str, int] = ChipStack.add_chips_from_amount(R)
         remove_stack: Dict[str, int] = {denom1: deltaN1}
         self._add_chips(add_stack)
-        self._add_chips(remainder_stack)
         self._remove_chips(remove_stack)
+        # add the remainder
+        self.add_chips_from_amount(R)
 
     def transfer_chips(self, destination: ChipStack, transfer_stack: Dict[str, int]) -> bool:
         """
