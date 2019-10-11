@@ -24,6 +24,12 @@ class MyTestCase(unittest.TestCase):
         for key in cs.stack.keys():
             self.assertEqual(cs.stack[key], sample.get(key, 0))
 
+    def test_init_from_dealer(self):
+        pass
+
+    def test_init_from_amount(self):
+        pass
+
     # =========== Helper Methods ===========
     def test_stack_value(self):
         cs = ChipStack.from_standard_stack()
@@ -44,6 +50,12 @@ class MyTestCase(unittest.TestCase):
     def test_get_empty_stack(self):
         empty = {'$1': 0, '$5': 0, '$10': 0, '$20': 0, '$25': 0, '$50': 0, '$100': 0}
         self.assertEqual(ChipStack.get_empty_stack(), empty)
+
+    def test_add_chips_from_amount(self):
+        pass
+
+    def remove_chips_for_amount(self):
+        pass
 
     # =========== Chip Operations ===========
     def test_add_chips(self):

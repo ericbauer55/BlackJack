@@ -20,7 +20,7 @@ class ChipStack:
 
     @classmethod
     def from_amount(cls, amount: int = 211) -> ChipStack:
-        return cls(stack=ChipStack.get_chips_from_amount(amount))
+        return cls(stack=ChipStack.add_chips_from_amount(amount))
 
     @classmethod
     def from_standard_stack(cls) -> ChipStack:
