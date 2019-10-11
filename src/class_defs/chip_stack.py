@@ -107,6 +107,7 @@ class ChipStack:
         denominations as possible. If 'low', all chips will be converted in $1 chips.
         :return: dictionary of denomination keys and chip quantities as values
         """
+        # TODO: consider changing name to get_chips_from_payout or add_chips_from_amount
         temp = ChipStack()  # get an empty chipstack
         if amount == 0:
             return temp.stack
@@ -130,6 +131,7 @@ class ChipStack:
 
         If the amount requires chips of lower denoms than is available, higher denom chips will be exchanged for lower
         """
+        # TODO: consider changing name or remove_chips_for_amount
         output_dict: Dict[str, int] = ChipStack.get_empty_stack()
 
         for denom, qty in self.stack.items():
