@@ -81,12 +81,15 @@ class ChipStack:
     @staticmethod
     def get_chip_value(denom: str) -> int:
         """returns the integer value associated with a chip denomination"""
-        # TODO: definitely refactor into dictionary lookup?
+        if denom not in ChipStack.CHIP_VALUES.keys():
+            raise KeyError('Invalid Denomination {}'.format(denom))
         return ChipStack.CHIP_VALUES[denom]
 
     @staticmethod
     def get_chip_string(denom_value: int) -> str:
         """returns the denomination value string associated with a chip integer value"""
+        if denom_value not in ChipStack.CHIP_VALUES.values():
+            raise ValueError('Invalid Chip Value {}'.format(denom_value))
         return '${}'.format(denom_value)
 
     @staticmethod
@@ -98,7 +101,7 @@ class ChipStack:
         return {'$1': 0, '$5': 0, '$10': 0, '$20': 0, '$25': 0, '$50': 0, '$100': 0}
 
     @staticmethod
-    def get_chips_from_amount(amount: int, denom_pref: str = 'high') -> Dict[str, int]:
+    def add_chips_from_amount(amount: int, denom_pref: str = 'high') -> Dict[str, int]:
         """
         This function returns a dictionary of chip denoms and their quantities based on an input dollar amount.
         NOTE: this might be a knapsack problem
@@ -216,7 +219,7 @@ class ChipStack:
             raise ValueError('You cannot exchange "{0}" for fractional "{1}"'.format(denom1, denom2))
         # add and remove the exchanged quantities
         add_stack: Dict[str, int] = {denom2: N2}
-        remainder_stack: Dict[str, int] = ChipStack.get_chips_from_amount(R)
+        remainder_stack: Dict[str, int] = ChipStack.add_chips_from_amount(R)
         remove_stack: Dict[str, int] = {denom1: deltaN1}
         self._add_chips(add_stack)
         self._add_chips(remainder_stack)

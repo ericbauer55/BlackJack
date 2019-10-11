@@ -31,6 +31,11 @@ class MyTestCase(unittest.TestCase):
 
     def test_get_chip_value(self):
         self.assertEqual(5, ChipStack.get_chip_value('$5'))
+        self.assertRaises(KeyError, ChipStack.get_chip_value, '##20$')
+
+    def test_get_chip_string(self):
+        self.assertEqual('$20', ChipStack.get_chip_string(20))
+        self.assertRaises(ValueError, ChipStack.get_chip_string, 11)
 
     def test_get_empty_stack(self):
         empty = {'$1': 0, '$5': 0, '$10': 0, '$20': 0, '$25': 0, '$50': 0, '$100': 0}
