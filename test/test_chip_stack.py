@@ -52,7 +52,8 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(ChipStack.get_empty_stack(), empty)
 
     def test_add_chips_from_amount(self):
-        pass
+        cs = ChipStack()
+        cs.add_chips_from_amount()
 
     def remove_chips_for_amount(self):
         pass

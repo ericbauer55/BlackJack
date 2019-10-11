@@ -100,66 +100,6 @@ class ChipStack:
         """
         return {'$1': 0, '$5': 0, '$10': 0, '$20': 0, '$25': 0, '$50': 0, '$100': 0}
 
-    @staticmethod
-    def add_chips_from_amount(amount: int, denom_pref: str = 'high') -> Dict[str, int]:
-        """
-        This function returns a dictionary of chip denoms and their quantities based on an input dollar amount.
-        NOTE: this might be a knapsack problem
-        :param amount: the dollar amount to convert into chips
-        :param denom_pref: either 'high' or 'low'. If 'high' the chips returned will be as high of
-        denominations as possible. If 'low', all chips will be converted in $1 chips.
-        :return: dictionary of denomination keys and chip quantities as values
-        """
-        # TODO: consider changing name to get_chips_from_payout or add_chips_from_amount
-        temp = ChipStack()  # get an empty chipstack
-        if amount == 0:
-            return temp.stack
-
-        temp._add_chips({'$1': amount})
-        if denom_pref == 'low':
-            return temp.stack
-        denoms = list(temp.stack.keys())
-        for i in range(1, len(denoms)):
-            try:
-                # exchange all of a lower denom for the next higher denom
-                temp.exchange_chips(denom1=denoms[i-1], denom2=denoms[i])
-            except ValueError:
-                # do nothing since should only occur when converting from $50: 1 to $100: 0
-                pass
-        return temp.stack
-
-    def remove_chips_for_amount(self, amount: int) -> Dict[str, int]:
-        """
-        This function is typically used to return a stack dictionary needed to place a bet of :param amount
-
-        If the amount requires chips of lower denoms than is available, higher denom chips will be exchanged for lower
-        """
-        # TODO: consider changing name remove_chips_for_bet or remove_chips_for_amount
-        output_dict: Dict[str, int] = ChipStack.get_empty_stack()
-
-        for denom, qty in self.stack.items():
-            # determine number of "denom" chips to put towards reducing amount to 0
-            N = min(floor(amount/ChipStack.get_chip_value(denom)), qty)
-            output_dict[denom] += N
-            amount -= N * ChipStack.get_chip_value(denom)  # reduce amount left to consider
-        if amount > 0:  # if there is still some amount left, exchange some higher denom chips for $1 to cover it
-            # find the first lowest chip that can cover the remainder AND has uncommitted chips
-            exchange_exists: int = False
-            for denom, value in self.CHIP_VALUES:
-                uncommitted_quantity: int = self.stack[denom] - output_dict[denom]
-                if uncommitted_quantity > 0 and value > amount:
-                    self.exchange_chips(denom, '$1')
-                    exchange_exists = True
-                    # finish the transfer
-                    N = amount
-                    output_dict['$1'] += N
-                    amount -= N  # reduce amount left to consider
-            # if there is no exchange available to cover the remainder, throw error
-            if not exchange_exists:
-                raise ValueError('The remaining amount {} cannot be exchanged for.'.format(amount))
-
-        return output_dict
-
     # =========== Chip Operations ===========
     def _add_chips(self, added_stack: Dict[str, int]) -> None:
         """
@@ -239,6 +179,66 @@ class ChipStack:
         else:
             destination._add_chips(transfer_stack)
         return transfer_success
+
+
+    def add_chips_from_amount(self, amount: int, denom_pref: str = 'high') -> Dict[str, int]:
+        """
+        This function returns a dictionary of chip denoms and their quantities based on an input dollar amount.
+        NOTE: this might be a knapsack problem
+        :param amount: the dollar amount to convert into chips
+        :param denom_pref: either 'high' or 'low'. If 'high' the chips returned will be as high of
+        denominations as possible. If 'low', all chips will be converted in $1 chips.
+        :return: dictionary of denomination keys and chip quantities as values
+        """
+        # TODO: consider changing name to get_chips_from_payout or add_chips_from_amount
+        temp = ChipStack()  # get an empty chipstack
+        if amount == 0:
+            return temp.stack
+
+        temp._add_chips({'$1': amount})
+        if denom_pref == 'low':
+            return temp.stack
+        denoms = list(temp.stack.keys())
+        for i in range(1, len(denoms)):
+            try:
+                # exchange all of a lower denom for the next higher denom
+                temp.exchange_chips(denom1=denoms[i-1], denom2=denoms[i])
+            except ValueError:
+                # do nothing since should only occur when converting from $50: 1 to $100: 0
+                pass
+        return temp.stack
+
+    def remove_chips_for_amount(self, amount: int) -> Dict[str, int]:
+        """
+        This function is typically used to return a stack dictionary needed to place a bet of :param amount
+
+        If the amount requires chips of lower denoms than is available, higher denom chips will be exchanged for lower
+        """
+        # TODO: consider changing name remove_chips_for_bet or remove_chips_for_amount
+        output_dict: Dict[str, int] = ChipStack.get_empty_stack()
+
+        for denom, qty in self.stack.items():
+            # determine number of "denom" chips to put towards reducing amount to 0
+            N = min(floor(amount/ChipStack.get_chip_value(denom)), qty)
+            output_dict[denom] += N
+            amount -= N * ChipStack.get_chip_value(denom)  # reduce amount left to consider
+        if amount > 0:  # if there is still some amount left, exchange some higher denom chips for $1 to cover it
+            # find the first lowest chip that can cover the remainder AND has uncommitted chips
+            exchange_exists: int = False
+            for denom, value in self.CHIP_VALUES:
+                uncommitted_quantity: int = self.stack[denom] - output_dict[denom]
+                if uncommitted_quantity > 0 and value > amount:
+                    self.exchange_chips(denom, '$1')
+                    exchange_exists = True
+                    # finish the transfer
+                    N = amount
+                    output_dict['$1'] += N
+                    amount -= N  # reduce amount left to consider
+            # if there is no exchange available to cover the remainder, throw error
+            if not exchange_exists:
+                raise ValueError('The remaining amount {} cannot be exchanged for.'.format(amount))
+
+        return output_dict
 
 
 if __name__ == '__main__':
