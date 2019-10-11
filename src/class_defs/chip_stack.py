@@ -131,7 +131,7 @@ class ChipStack:
 
         If the amount requires chips of lower denoms than is available, higher denom chips will be exchanged for lower
         """
-        # TODO: consider changing name or remove_chips_for_amount
+        # TODO: consider changing name remove_chips_for_bet or remove_chips_for_amount
         output_dict: Dict[str, int] = ChipStack.get_empty_stack()
 
         for denom, qty in self.stack.items():

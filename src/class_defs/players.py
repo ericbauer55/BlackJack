@@ -98,6 +98,9 @@ class Player:
         print('{0} viewing {1}\'s Chip Stack:'.format(self.name, player.name))
         player.chips.view_stack(tabular=False)
 
+    def bet_amount(self, destination_pot: ChipStack, amount: int) -> None:
+        self.payout_chips(destination_pot, self.chips.get_chips_for_amount(amount))
+
     def payout_chips(self, destination_pot: ChipStack, chip_amounts: Dict[str, int]) -> None:
         """This is a great function to use when placing bets with a player"""
         self.pot.transfer_chips(destination_pot, chip_amounts)
