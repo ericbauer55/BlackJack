@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Dict, Optional, List
+from math import floor, ceil
 
 
 class ChipStack:
@@ -100,6 +101,9 @@ class ChipStack:
         :return: dictionary of denomination keys and chip quantities as values
         """
         temp = ChipStack()  # get an empty chipstack
+        if amount == 0:
+            return temp.stack
+
         temp._add_chips({'$1': amount})
         if denom_pref == 'low':
             return temp.stack
@@ -138,36 +142,42 @@ class ChipStack:
                 raise ValueError('The quantity of {0} chips cannot go negative'.format(denomination))
             self.stack[denomination] -= removed_stack.get(denomination, 0)
 
-    def exchange_chips(self, denom1: str, denom2: str, quantity: int = -1) -> None:
+    def exchange_chips(self, denom1: str, denom2: str, N1: int = -1) -> None:
         """
         This function exchanges a quantity of denom1 for denom2. Sometimes, the exchange rate and N1 quantity will not
         exchange without a remainder. For example, 2x $25 chips converts to 2x $20 chips with $10 remainder. Both of
         the $25 chips must be exchanged for the maximum number of $20 chips, but the remainder will be converted to a
         set of chips with the highest denominations using the get_chips_from_amount function.
-        -The amount of denom2 chips gained is N2 = floor((denom1 * N)/denom2)
-        -The amount of denom1 chips left is N1' = N1 - N2 * ceil(denom2/denom1)
-        Example 1: denom1=$25, N1=3 exchanged for denom2=$20 gets N2 chips
-            N2 = floor((3 * $25)/$20) = floor(75/20) = 3
-            N1' = N1 - N2 * ceil(20/25) =
-        Example 2: denom1=$10, N1=5 exchanged for denom2=$25 gets N2 chips
-            N2 = floor((5 * $10)/$25) = floor(50/25) = 2
-            N1' = N1 - N2 * ceil(25/10)
-        Transaction occurs within a single ChipStack object, and doesn't transfer between stacks
+        -The amount of denom2 chips gained is N2 = floor((denom1/denom2) * N1)
+        -The required denom1 chips is    deltaN1 = ceiling((denom2/denom1) * N2)
+        -The amount of denom1 chips left is   N1' = N1 - deltaN1
+        -The remainder amount afterwards is    R = floor(((denom1/denom2)*deltaN1 - N2) * denom2)
+
+        Example 1: denom1=$25, N1=3 exchanged for denom2=$10 gets N2 chips
+            N2 = floor(($25/$10) * 3) = floor(7.5) =  7 chips of denom2 gained
+            deltaN1 = ceiling(($10/$25) * 7) = ceiling(2.8) = 3 chips of denom1 used
+            N1' = 3 - 3 = 0 chips of denom1 left
+            R = floor((($25/$10)*3 - 7) * $10) = floor((7.5 - 7) * $10) = floor(0.5 * $10) = $5
+                This remainder is first converted to $1 and then exchanged upwards for 1 of the $5 chips
+
+        NOTE: Transaction occurs within a single ChipStack object, and doesn't transfer between stacks
         """
-        # TODO: figure out the exact formulas for N1 and N2
         denom1_value, denom2_value = ChipStack.get_chip_value(denom1), ChipStack.get_chip_value(denom2)
-
-        if quantity == -1:
+        # compute the quantities of exchanged chips and remainder value
+        if N1 == -1:
             # exchange ALL chips of denom1 for denom2
-            quantity = self.stack[denom1]  # get number of denom1 chips
-        # quantity * denom1 = chip_num * denom2
-        chip_num = (denom1_value / denom2_value) * quantity
-        if chip_num < 1.0:
+            N1 = self.stack[denom1]  # get number of denom1 chips
+        N2: int = floor((denom1_value/denom2_value) * N1)  # number of denom2 chips gained
+        deltaN1: int = ceil((denom2_value/denom1_value) * N2)  # number of denom1 chips used
+        R: int = floor(((denom1_value/denom2_value) * deltaN1 - N2) * denom2_value)  # remainder value
+        if N2 < 1.0:
             raise ValueError('You cannot exchange "{0}" for fractional "{1}"'.format(denom1, denom2))
-
-        add_stack: Dict[str, int] = {denom2: int(chip_num)}
-        remove_stack: Dict[str, int] = {denom1: int(chip_num) * denom2_value // denom1_value}
+        # add and remove the exchanged quantities
+        add_stack: Dict[str, int] = {denom2: N2}
+        remainder_stack: Dict[str, int] = ChipStack.get_chips_from_amount(R)
+        remove_stack: Dict[str, int] = {denom1: deltaN1}
         self._add_chips(add_stack)
+        self._add_chips(remainder_stack)
         self._remove_chips(remove_stack)
 
     def transfer_chips(self, destination: ChipStack, transfer_stack: Dict[str, int]) -> bool:
