@@ -180,33 +180,31 @@ class ChipStack:
             destination._add_chips(transfer_stack)
         return transfer_success
 
-
-    def add_chips_from_amount(self, amount: int, denom_pref: str = 'high') -> Dict[str, int]:
+    def add_chips_from_amount(self, amount: int, denom_pref: str = 'high') -> None:
         """
-        This function returns a dictionary of chip denoms and their quantities based on an input dollar amount.
+        This function adds a dictionary of chip denoms and their quantities based on an input dollar amount.
+        This is usually called when a payout of :param amount is given to a player with this chip stack
         NOTE: this might be a knapsack problem
         :param amount: the dollar amount to convert into chips
         :param denom_pref: either 'high' or 'low'. If 'high' the chips returned will be as high of
         denominations as possible. If 'low', all chips will be converted in $1 chips.
-        :return: dictionary of denomination keys and chip quantities as values
+        :return: none
         """
         # TODO: consider changing name to get_chips_from_payout or add_chips_from_amount
-        temp = ChipStack()  # get an empty chipstack
         if amount == 0:
-            return temp.stack
+            return  # do nothing
 
-        temp._add_chips({'$1': amount})
+        self._add_chips({'$1': amount})
         if denom_pref == 'low':
-            return temp.stack
-        denoms = list(temp.stack.keys())
+            return  # stop here
+        denoms = list(self.stack.keys())
         for i in range(1, len(denoms)):
             try:
                 # exchange all of a lower denom for the next higher denom
-                temp.exchange_chips(denom1=denoms[i-1], denom2=denoms[i])
+                self.exchange_chips(denom1=denoms[i-1], denom2=denoms[i])
             except ValueError:
                 # do nothing since should only occur when converting from $50: 1 to $100: 0
                 pass
-        return temp.stack
 
     def remove_chips_for_amount(self, amount: int) -> Dict[str, int]:
         """
