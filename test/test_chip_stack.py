@@ -51,22 +51,6 @@ class MyTestCase(unittest.TestCase):
         empty = {'$1': 0, '$5': 0, '$10': 0, '$20': 0, '$25': 0, '$50': 0, '$100': 0}
         self.assertEqual(ChipStack.get_empty_stack(), empty)
 
-    def test_add_chips_from_amount(self):
-        cs = ChipStack()
-        cs.add_chips_from_amount(amount=201)  # sum of all the keys
-        self.assertEqual(cs.stack['$1'], 1)  # 201 -> $1: 1 and $5: 40
-        self.assertEqual(cs.stack['$5'], 0)  # 200 -> $5: 0 and $10: 20
-        self.assertEqual(cs.stack['$10'], 0)  # 200 -> $10: 0 and $20: 10
-        self.assertEqual(cs.stack['$20'], 0)  # 200 -> $20: 0 and $25: 8
-        self.assertEqual(cs.stack['$25'], 0)  # 200 -> $25: 0 and $50: 4
-        self.assertEqual(cs.stack['$50'], 0)  # 200 -> $50: 0 and $100: 2
-        self.assertEqual(cs.stack['$100'], 2)
-
-
-
-    def remove_chips_for_amount(self):
-        pass
-
     # =========== Chip Operations ===========
     def test_add_chips(self):
         # create an empty stack and add another empty stack
@@ -160,6 +144,36 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(cs1.stack, sample_stack)
         self.assertEqual(cs2.stack, empty_stack)
 
+    def test_add_chips_from_amount(self):
+        # Test a simple case
+        cs = ChipStack()
+        cs.add_chips_from_amount(amount=201)  # sum of all the keys
+        self.assertEqual(cs.stack['$1'], 1)  # 201 -> $1: 1 and $5: 40
+        self.assertEqual(cs.stack['$5'], 0)  # 200 -> $5: 0 and $10: 20
+        self.assertEqual(cs.stack['$10'], 0)  # 200 -> $10: 0 and $20: 10
+        self.assertEqual(cs.stack['$20'], 0)  # 200 -> $20: 0 and $25: 8
+        self.assertEqual(cs.stack['$25'], 0)  # 200 -> $25: 0 and $50: 4
+        self.assertEqual(cs.stack['$50'], 0)  # 200 -> $50: 0 and $100: 2
+        self.assertEqual(cs.stack['$100'], 2)
+        # Test a case when adding the remainder of an exchange
+        # NOTE: once the amount has been deposited into the lowest chip denoms, do not sort into higher as side effect
+        cs = ChipStack({'$5': 0, '$10': 7, '$25': 0})
+        remainder = 5
+        cs.add_chips_from_amount(remainder)
+        self.assertEqual(cs.stack['$1'], 0)  # 5 of $1 goes to 1 of $5
+        self.assertEqual(cs.stack['$5'], 1)  # stays
+        self.assertEqual(cs.stack['$10'], 7)
+        self.assertEqual(cs.stack['$20'], 0)
+        self.assertEqual(cs.stack['$25'], 0)
+        self.assertEqual(cs.stack['$50'], 0)
+        self.assertEqual(cs.stack['$100'], 0)
+
+
+    def test_remove_chips_for_amount(self):
+        pass
+
+    def test_sort_stack(self):
+        pass
 
 if __name__ == '__main__':
     unittest.main()
