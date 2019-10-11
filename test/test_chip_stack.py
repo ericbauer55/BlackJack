@@ -25,9 +25,13 @@ class MyTestCase(unittest.TestCase):
             self.assertEqual(cs.stack[key], sample.get(key, 0))
 
     # =========== Helper Methods ===========
-    def test_get_stack_value(self):
+    def test_stack_value(self):
         cs = ChipStack.from_standard_stack()
         self.assertEqual(300, cs.stack_value)
+
+    def test_get_stack_value(self):
+        cs = ChipStack.from_standard_stack()
+        self.assertEqual(300, ChipStack.get_stack_value(cs.stack))
 
     def test_get_chip_value(self):
         self.assertEqual(5, ChipStack.get_chip_value('$5'))
