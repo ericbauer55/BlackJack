@@ -34,8 +34,13 @@ class ChipStack:
     @property
     def stack_value(self) -> int:
         """This property gets the total value of the chips in the stack"""
+        return ChipStack.get_stack_value(self.stack)
+
+    @staticmethod
+    def get_stack_value(stack_dict: Dict[str, int]) -> int:
+        """This returns the value of all chip denoms and quantities in an input stack dictionary"""
         chip_sum = 0
-        for denom, quantity in self.stack.items():
+        for denom, quantity in stack_dict.items():
             chip_sum += ChipStack.get_chip_value(denom) * quantity
         return chip_sum
 
@@ -117,6 +122,9 @@ class ChipStack:
                 pass
         return temp.stack
 
+    def get_chips_for_amount(self, amount: int) -> Dict[str, int]:
+        """This function is typically used """
+        pass
 
 
     # =========== Chip Operations ===========
