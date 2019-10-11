@@ -82,7 +82,7 @@ class ChipStack:
     def get_chip_value(denom: str) -> int:
         """returns the integer value associated with a chip denomination"""
         # TODO: definitely refactor into dictionary lookup?
-        return int(denom.strip('$'))
+        return ChipStack.CHIP_VALUES[denom]
 
     @staticmethod
     def get_chip_string(denom_value: int) -> str:
@@ -125,7 +125,7 @@ class ChipStack:
                 pass
         return temp.stack
 
-    def get_chips_for_amount(self, amount: int) -> Dict[str, int]:
+    def remove_chips_for_amount(self, amount: int) -> Dict[str, int]:
         """
         This function is typically used to return a stack dictionary needed to place a bet of :param amount
 
@@ -200,6 +200,10 @@ class ChipStack:
 
         NOTE: Transaction occurs within a single ChipStack object, and doesn't transfer between stacks
         """
+        if denom1 not in ChipStack.CHIP_VALUES.keys():
+            raise KeyError('When exchanging denominations, Denom 1 was an invalid key: {}'.format(denom1))
+        if denom2 not in ChipStack.CHIP_VALUES.keys():
+            raise KeyError('When exchanging denominations, Denom 2 was an invalid key: {}'.format(denom2))
         denom1_value, denom2_value = ChipStack.get_chip_value(denom1), ChipStack.get_chip_value(denom2)
         # compute the quantities of exchanged chips and remainder value
         if N1 == -1:

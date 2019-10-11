@@ -2,10 +2,11 @@ import unittest
 import sys
 
 sys.path.insert(1, '../src/class_defs')
-from chip_stack import ChipStack
+from src.class_defs.chip_stack import ChipStack
 
 
 class MyTestCase(unittest.TestCase):
+    # =========== Constructors ===========
     def test_empty_init(self):
         cs = ChipStack(stack=None)
         for key in cs.stack.keys():
@@ -23,17 +24,19 @@ class MyTestCase(unittest.TestCase):
         for key in cs.stack.keys():
             self.assertEqual(cs.stack[key], sample.get(key, 0))
 
+    # =========== Helper Methods ===========
     def test_get_stack_value(self):
         cs = ChipStack.from_standard_stack()
         self.assertEqual(300, cs.stack_value)
 
     def test_get_chip_value(self):
-        self.assertEqual(5, ChipStack._get_chip_value('$5'))
+        self.assertEqual(5, ChipStack.get_chip_value('$5'))
 
     def test_get_empty_stack(self):
         empty = {'$1': 0, '$5': 0, '$10': 0, '$20': 0, '$25': 0, '$50': 0, '$100': 0}
         self.assertEqual(ChipStack.get_empty_stack(), empty)
 
+    # =========== Chip Operations ===========
     def test_add_chips(self):
         # create an empty stack and add another empty stack
         cs = ChipStack()
@@ -78,6 +81,22 @@ class MyTestCase(unittest.TestCase):
         cs.exchange_chips('$1', '$50')
         self.assertEqual(cs.stack['$50'], 2)
         self.assertEqual(cs.stack['$1'], 5)
+        # try to exchange chips for bad denominations
+        self.assertRaises(KeyError, cs.exchange_chips, '$1', '#50')
+        self.assertRaises(KeyError, cs.exchange_chips, '#1', '$50')
+
+    def test_exchange_chips_with_remainders(self):
+        cs = ChipStack()
+        cs._add_chips({'$25': 3})
+        cs.exchange_chips('$25', '$10')
+        self.assertEqual(cs.stack['$10'], 7)
+        self.assertEqual(cs.stack['$5'], 1)
+        cs.stack = ChipStack.get_empty_stack()
+        cs._add_chips({'$20': 6})
+        cs.exchange_chips('$20', '$50')
+        self.assertEqual(cs.stack['$50'], 2)
+        self.assertEqual(cs.stack['$20'], 1)
+
 
     def test_transfer_chips_all(self):
         cs1 = ChipStack.from_standard_stack()

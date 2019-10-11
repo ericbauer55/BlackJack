@@ -99,7 +99,7 @@ class Player:
         player.chips.view_stack(tabular=False)
 
     def bet_amount(self, destination_pot: ChipStack, amount: int) -> None:
-        self.payout_chips(destination_pot, self.chips.get_chips_for_amount(amount))
+        self.payout_chips(destination_pot, self.chips.remove_chips_for_amount(amount))
 
     def payout_chips(self, destination_pot: ChipStack, chip_amounts: Dict[str, int]) -> None:
         """This is a great function to use when placing bets with a player"""
