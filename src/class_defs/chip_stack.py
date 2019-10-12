@@ -212,38 +212,22 @@ class ChipStack:
 
         self._add_chips(ChipStack.filled_stack_from_amount(amount))
 
-
-    def remove_chips_for_amount(self, amount: int) -> Dict[str, int]:
+    def transfer_amount_of_chips(self, destination: ChipStack, amount: int) -> None:
         """
-        This function is typically used to return a stack dictionary needed to place a bet of :param amount
-
-        If the amount requires chips of lower denoms than is available, higher denom chips will be exchanged for lower
+        This function transfers chips valued at :param amount to the other stack :param destination
+        This function does this by sorting low to reduce all value to $1 chips, transfers the amount as the quantity,
+        and finally sorts the stack back high. This can change the layout of the stack as a side effect but stack value
+        is preserved
         """
-        # TODO: consider changing name remove_chips_for_bet or remove_chips_for_amount
-        output_dict: Dict[str, int] = ChipStack.get_empty_stack()
+        if amount == 0:
+            return  # do nothing
+        if amount > self.stack_value:
+            raise ValueError('Cannot remove amount {0}, stack value is only {1}'.format(amount, self.stack_value))
 
-        for denom, qty in self.stack.items():
-            # determine number of "denom" chips to put towards reducing amount to 0
-            N = min(floor(amount/ChipStack.get_chip_value(denom)), qty)
-            output_dict[denom] += N
-            amount -= N * ChipStack.get_chip_value(denom)  # reduce amount left to consider
-        if amount > 0:  # if there is still some amount left, exchange some higher denom chips for $1 to cover it
-            # find the first lowest chip that can cover the remainder AND has uncommitted chips
-            exchange_exists: int = False
-            for denom, value in self.CHIP_VALUES:
-                uncommitted_quantity: int = self.stack[denom] - output_dict[denom]
-                if uncommitted_quantity > 0 and value > amount:
-                    self.exchange_chips(denom, '$1')
-                    exchange_exists = True
-                    # finish the transfer
-                    N = amount
-                    output_dict['$1'] += N
-                    amount -= N  # reduce amount left to consider
-            # if there is no exchange available to cover the remainder, throw error
-            if not exchange_exists:
-                raise ValueError('The remaining amount {} cannot be exchanged for.'.format(amount))
-
-        return output_dict
+        transfer_stack: Dict[str, int] = {'$1': amount}
+        self.sort_stack(denom_pref='low')  # convert all chips to $1
+        self.transfer_chips(destination=destination, transfer_stack=transfer_stack)
+        self.sort_stack(denom_pref='high')  # could be made to be uniform
 
     def sort_stack(self, denom_pref: str = 'high') -> None:
         """This function exchanges chips in the stack to either be biased low, uniformly, or high"""
