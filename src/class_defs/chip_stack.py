@@ -182,7 +182,7 @@ class ChipStack:
         self._add_chips(add_stack)
         self._remove_chips(remove_stack)
         # add the remainder
-        self.add_chips_from_amount(R)
+        self.add_amount_of_chips(R)
 
     def transfer_chips(self, destination: ChipStack, transfer_stack: Dict[str, int]) -> bool:
         """
@@ -199,7 +199,7 @@ class ChipStack:
             destination._add_chips(transfer_stack)
         return transfer_success
 
-    def add_chips_from_amount(self, amount: int) -> None:
+    def add_amount_of_chips(self, amount: int) -> None:
         """
         This function adds a dictionary of chip denoms and their quantities based on an input dollar amount.
         This is usually called when a payout of :param amount is given to a player with this chip stack
