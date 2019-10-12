@@ -25,10 +25,17 @@ class MyTestCase(unittest.TestCase):
             self.assertEqual(cs.stack[key], sample.get(key, 0))
 
     def test_init_from_dealer(self):
-        pass
+        dealer = {'$1': 1000, '$5': 1000, '$10': 1000, '$20': 1000, '$25': 1000, '$50': 1000, '$100': 1000}
+        cs = ChipStack.from_dealer_stack()
+        self.assertEqual(cs.name, 'dealer')
+        for key in cs.stack.keys():
+            self.assertEqual(cs.stack[key], dealer[key])
 
     def test_init_from_amount(self):
-        pass
+        target = {'$1': 1, '$5': 1, '$10': 1, '$20': 0, '$25': 1, '$50': 1, '$100': 1}
+        cs = ChipStack.from_amount(amount=191)
+        for key in cs.stack.keys():
+            self.assertEqual(cs.stack[key], target[key])
 
     # =========== Helper Methods ===========
     def test_stack_value(self):
@@ -50,6 +57,10 @@ class MyTestCase(unittest.TestCase):
     def test_get_empty_stack(self):
         empty = {'$1': 0, '$5': 0, '$10': 0, '$20': 0, '$25': 0, '$50': 0, '$100': 0}
         self.assertEqual(ChipStack.get_empty_stack(), empty)
+
+    def test_filled_stack_from_amount(self):
+        target = {'$1': 1, '$5': 1, '$10': 1, '$20': 0, '$25': 1, '$50': 1, '$100': 1}
+        temp = ChipStack.filled_stack_from_amount(ChipStack.get_stack_value(target))
 
     # =========== Chip Operations ===========
     def test_add_chips(self):
@@ -111,7 +122,6 @@ class MyTestCase(unittest.TestCase):
         cs.exchange_chips('$20', '$50')
         self.assertEqual(cs.stack['$50'], 2)
         self.assertEqual(cs.stack['$20'], 1)
-
 
     def test_transfer_chips_all(self):
         cs1 = ChipStack.from_standard_stack()
