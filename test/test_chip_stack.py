@@ -61,6 +61,8 @@ class MyTestCase(unittest.TestCase):
     def test_filled_stack_from_amount(self):
         target = {'$1': 1, '$5': 1, '$10': 1, '$20': 0, '$25': 1, '$50': 1, '$100': 1}
         temp = ChipStack.filled_stack_from_amount(ChipStack.get_stack_value(target))
+        for key in temp.keys():
+            self.assertEqual(temp[key], target[key])
 
     # =========== Chip Operations ===========
     def test_add_chips(self):
@@ -154,7 +156,7 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(cs1.stack, sample_stack)
         self.assertEqual(cs2.stack, empty_stack)
 
-    def test_add_chips_from_amount(self):
+    def test_add_amount_of_chips(self):
         # Test a simple case
         cs = ChipStack()
         cs.add_amount_of_chips(amount=201)  # sum of all the keys
@@ -179,7 +181,7 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(cs.stack['$100'], 0)
 
 
-    def test_remove_chips_for_amount(self):
+    def test_transfer_amount_of_chips(self):
         pass
 
     def test_sort_stack(self):
