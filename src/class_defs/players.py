@@ -98,15 +98,19 @@ class Player:
         print('{0} viewing {1}\'s Chip Stack:'.format(self.name, player.name))
         player.chips.view_stack(tabular=False)
 
-    def bet_amount(self, destination_pot: ChipStack, amount: int) -> None:
-        self.payout_chips(destination_pot, self.chips.remove_chips_for_amount(amount))
-
-    def payout_chips(self, destination_pot: ChipStack, chip_amounts: Dict[str, int]) -> None:
+    def bet_amount_of_chips(self, destination_pot: ChipStack, amount_of_chips: int) -> None:
         """This is a great function to use when placing bets with a player"""
-        self.pot.transfer_chips(destination_pot, chip_amounts)
+        # TODO: refactor with chip stack changes
+        self.pot.transfer_amount_of_chips(destination_pot, amount_of_chips)
+
+    def payout_chips(self, destination_pot: ChipStack, amount_of_chips: int) -> None:
+        """This is a great function to use when placing bets with a player"""
+        # TODO: refactor with chip stack changes
+        self.pot.transfer_amount_of_chips(destination_pot, amount_of_chips)
 
     def payout_all(self, destination_pot: ChipStack) -> None:
         """This is a great function to use when moving around chip stacks after a hand"""
+        # TODO: refactor with chip stack changes
         chip_amounts = self.pot.stack.copy()
         self.pot.transfer_chips(destination_pot, chip_amounts)
 
