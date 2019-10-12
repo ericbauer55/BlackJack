@@ -147,7 +147,7 @@ class MyTestCase(unittest.TestCase):
     def test_add_chips_from_amount(self):
         # Test a simple case
         cs = ChipStack()
-        cs.add_chips_from_amount(amount=201)  # sum of all the keys
+        cs.add_amount_of_chips(amount=201)  # sum of all the keys
         self.assertEqual(cs.stack['$1'], 1)  # 201 -> $1: 1 and $5: 40
         self.assertEqual(cs.stack['$5'], 0)  # 200 -> $5: 0 and $10: 20
         self.assertEqual(cs.stack['$10'], 0)  # 200 -> $10: 0 and $20: 10
@@ -159,7 +159,7 @@ class MyTestCase(unittest.TestCase):
         # NOTE: once the amount has been deposited into the lowest chip denoms, do not sort into higher as side effect
         cs = ChipStack({'$5': 0, '$10': 7, '$25': 0})
         remainder = 5
-        cs.add_chips_from_amount(remainder)
+        cs.add_amount_of_chips(remainder)
         self.assertEqual(cs.stack['$1'], 0)  # 5 of $1 goes to 1 of $5
         self.assertEqual(cs.stack['$5'], 1)  # stays
         self.assertEqual(cs.stack['$10'], 7)
