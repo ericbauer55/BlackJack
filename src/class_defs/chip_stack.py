@@ -100,6 +100,25 @@ class ChipStack:
         """
         return {'$1': 0, '$5': 0, '$10': 0, '$20': 0, '$25': 0, '$50': 0, '$100': 0}
 
+    @staticmethod
+    def filled_stack_from_amount(amount: int) -> Dict[str, int]:
+        """
+        This function returns a stack dictionary of chips that add up to equal the amount.
+        The dictionary is biased high so that $200 yields $100: 2 rather than $1: 200
+        """
+        output_dict: Dict[str, int] = ChipStack.get_empty_stack()
+        denoms = list(ChipStack.CHIP_VALUES.keys()).copy()  # don't modify this class attribute
+        denoms.reverse()  # start filling in amount by highest denomination first
+
+        for denom in denoms:
+            # determine number of "denom" chips to put towards reducing amount to 0
+            N = floor(amount / ChipStack.get_chip_value(denom))
+            output_dict[denom] += N
+            amount -= N * ChipStack.get_chip_value(denom)  # reduce amount left to consider
+
+        return output_dict
+
+
     # =========== Chip Operations ===========
     def _add_chips(self, added_stack: Dict[str, int]) -> None:
         """
@@ -180,31 +199,19 @@ class ChipStack:
             destination._add_chips(transfer_stack)
         return transfer_success
 
-    def add_chips_from_amount(self, amount: int, denom_pref: str = 'high') -> None:
+    def add_chips_from_amount(self, amount: int) -> None:
         """
         This function adds a dictionary of chip denoms and their quantities based on an input dollar amount.
         This is usually called when a payout of :param amount is given to a player with this chip stack
         NOTE: this might be a knapsack problem
         :param amount: the dollar amount to convert into chips
-        :param denom_pref: either 'high' or 'low'. If 'high' the chips returned will be as high of
-        denominations as possible. If 'low', all chips will be converted in $1 chips.
         :return: none
         """
-        # TODO: consider changing name to get_chips_from_payout or add_chips_from_amount
         if amount == 0:
             return  # do nothing
 
-        self._add_chips({'$1': amount})
-        if denom_pref == 'low':
-            return  # stop here
-        denoms = list(self.stack.keys())
-        for i in range(1, len(denoms)):
-            try:
-                # exchange all of a lower denom for the next higher denom
-                self.exchange_chips(denom1=denoms[i-1], denom2=denoms[i])
-            except ValueError:
-                # do nothing since should only occur when converting from $50: 1 to $100: 0
-                pass
+        self._add_chips(ChipStack.filled_stack_from_amount(amount))
+
 
     def remove_chips_for_amount(self, amount: int) -> Dict[str, int]:
         """
@@ -237,6 +244,23 @@ class ChipStack:
                 raise ValueError('The remaining amount {} cannot be exchanged for.'.format(amount))
 
         return output_dict
+
+    def sort_stack(self, denom_pref: str = 'high') -> None:
+        """This function exchanges chips in the stack to either be biased low, uniformly, or high"""
+        denoms = list(self.stack.keys())
+        if denom_pref == 'low':
+            for i in range(1, len(denoms)):
+                self.exchange_chips(denom1=denoms[i], denom2='$1')
+        elif denom_pref == 'uniform':
+            pass
+        elif denom_pref == 'high':
+            for i in range(1, len(denoms)):
+                try:
+                    # exchange all of a lower denom for the next higher denom
+                    self.exchange_chips(denom1=denoms[i-1], denom2=denoms[i])
+                except ValueError:
+                    # do nothing since should only occur when converting from $50: 1 to $100: 0
+                    pass
 
 
 if __name__ == '__main__':
